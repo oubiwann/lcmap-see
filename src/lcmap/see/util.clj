@@ -4,14 +4,6 @@
             [clojure.tools.logging :as log]
             [digest]))
 
-(defn serialize [args]
-  (cond (list? args)
-          (string/join (sort (map #'str args)))
-        (map? args)
-          (str (into (sorted-map) args))
-        :else
-          (str args)))
-
 (defn get-args-hash [model-name & args]
   (->> args
        (serialize)

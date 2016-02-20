@@ -32,7 +32,6 @@
             [lcmap.see.components :as components]
             [lcmap.see.config :as config]
             [lcmap.see.exceptions :as exceptions]
-            [lcmap.see.serializer :as serial]
             [lcmap.see.util :as util]))
 
 (def state :stopped)
