@@ -22,13 +22,11 @@
             [clojurewerkz.cassaforte.cql :as cql]
             [clojurewerkz.cassaforte.query :as query]
             ;; data types
-            [byte-streams]
             [clj-time.coerce :as time]
             [clojure.data.codec.base64 :as b64]
             ;; shell execution
             [clj-commons-exec :as exec]
             ;; api
-            [lcmap.see.app :as app]
             [lcmap.see.components :as components]
             [lcmap.see.config :as config]
             [lcmap.see.exceptions :as exceptions]
@@ -42,7 +40,7 @@
     (log/error "System has aready been initialized.")
     (do
       (alter-var-root #'system
-        (constantly (components/init #'app/app)))
+        (constantly (components/init)))
       (alter-var-root #'state (fn [_] :initialized))))
   state)
 
