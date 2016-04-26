@@ -26,9 +26,10 @@
             [clojure.data.codec.base64 :as b64]
             ;; shell execution
             [clj-commons-exec :as exec]
+            ;; other LCMAP libraries
+            [lcmap.config :as config]
             ;; api
             [lcmap.see.components :as components]
-            [lcmap.see.config :as config]
             [lcmap.see.exceptions :as exceptions]
             [lcmap.see.util :as util]))
 

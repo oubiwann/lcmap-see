@@ -38,7 +38,7 @@
   lcmap.see.components
   (:require [clojure.tools.logging :as log]
             [com.stuartsierra.component :as component]
-            [lcmap.see.components.config :as config]
+            [lcmap.config.components.config :as config]
             [lcmap.see.components.db :as db]
             [lcmap.see.components.eventd :as eventd]
             [lcmap.see.components.logger :as logger]
