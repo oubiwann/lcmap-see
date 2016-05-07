@@ -14,7 +14,7 @@
 
   (start [component]
     (log/info "Starting LCMAP SEE DB client ...")
-    (let [db-cfg (get-in component [:cfg :env :db])]
+    (let [db-cfg (get-in component [:cfg :lcmap.see.components.db])]
       (log/debug "Using config:" db-cfg)
       (let [conn (cc/connect (:hosts db-cfg) (dissoc db-cfg :hosts))]
         (log/debug "Component keys:" (keys component))
