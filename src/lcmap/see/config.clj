@@ -5,7 +5,11 @@
 (def opt-spec [])
 
 (def db-cfg-schema
-  {:hosts [schema/Str]})
+  {:hosts [schema/Str]
+   :user schema/Str
+   :pass schema/Str
+   :job-namespace schema/Str
+   :job-table schema/Str})
 
 (def msg-cfg-schema
   {:host schema/Str})

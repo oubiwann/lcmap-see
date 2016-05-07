@@ -4,10 +4,15 @@
             [clojurewerkz.cassaforte.client :as cc]
             [clojurewerkz.cassaforte.cql :as cql]
             [clojurewerkz.cassaforte.query :as query]
+            [lcmap.config.helpers :refer [init-cfg]]
+            [lcmap.see.config :as see-cfg]
             [lcmap.see.util :as util]))
 
-(def job-namespace "lcmap")
-(def job-table "job")
+;; XXX Use components instead? This is makes using a test configuration
+;;     somewhat difficult.
+(def db-cfg ((init-cfg see-cfg/defaults) :lcmap.see.components.db))
+(def job-namespace (:job-namespace db-cfg))
+(def job-table (:job-table db-cfg))
 
 (defn job? [conn job-id]
   (cql/select-async
