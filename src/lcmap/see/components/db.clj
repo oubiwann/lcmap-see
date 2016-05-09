@@ -14,14 +14,12 @@
 
   (start [component]
     (log/info "Starting LCMAP SEE DB client ...")
-    (let [db-cfg (get-in component [:cfg :lcmap.see.components.db])]
+    (let [db-cfg (get-in component [:cfg :lcmap.see])]
       (log/debug "Using config:" db-cfg)
       (let [conn (apply cc/connect (connect-opts db-cfg))]
         (log/debug "Component keys:" (keys component))
         (log/debug "Successfully created db connection:" conn)
-        (-> component
-            (merge db-cfg)
-            (assoc :conn conn)))))
+        (assoc component :conn conn))))
 
   (stop [component]
     (log/info "Stopping LCMAP SEE DB client ...")

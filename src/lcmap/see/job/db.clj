@@ -10,9 +10,9 @@
 
 ;; XXX Use components instead? This is makes using a test configuration
 ;;     somewhat difficult.
-(def db-cfg ((init-cfg see-cfg/defaults) :lcmap.see.components.db))
-(def job-namespace (:job-namespace db-cfg))
-(def job-table (:job-table db-cfg))
+(def cfg ((init-cfg see-cfg/defaults) :lcmap.see))
+(def job-namespace (:job-namespace cfg))
+(def job-table (:job-table cfg))
 
 (defn job? [conn job-id]
   (cql/select-async
