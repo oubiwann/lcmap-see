@@ -8,7 +8,7 @@
   {:lcmap.see {:db-hosts [schema/Str]
                :db-user schema/Str
                :db-pass schema/Str
-               :job-namespace schema/Str
+               :job-keyspace schema/Str
                :job-table schema/Str}})
 
 (def cfg-schema
