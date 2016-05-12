@@ -42,11 +42,12 @@
             [lcmap.see.components.db :as db]
             [lcmap.see.components.eventd :as eventd]
             [lcmap.see.components.logger :as logger]
-            [lcmap.see.components.system :as system]))
+            [lcmap.see.components.system :as system]
+            [lcmap.see.config]))
 
 (defn init []
   (component/system-map
-    :cfg (config/new-configuration)
+    :cfg (config/new-configuration lcmap.see.config/defaults)
     :logger (component/using
               (logger/new-logger)
               [:cfg])

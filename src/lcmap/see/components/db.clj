@@ -7,16 +7,16 @@
   (:require [clojure.tools.logging :as log]
             [com.stuartsierra.component :as component]
             [clojurewerkz.cassaforte.client :as cc]
-            [clojurewerkz.cassaforte.policies :as cp]))
+            [lcmap.config.cassaforte :refer [connect-opts]]))
 
 (defrecord JobTrackerDBClient [ ]
   component/Lifecycle
 
   (start [component]
     (log/info "Starting LCMAP SEE DB client ...")
-    (let [db-cfg (get-in component [:cfg :env :db])]
+    (let [db-cfg (get-in component [:cfg :lcmap.see])]
       (log/debug "Using config:" db-cfg)
-      (let [conn (cc/connect (:hosts db-cfg) (dissoc db-cfg :hosts))]
+      (let [conn (apply cc/connect (connect-opts db-cfg))]
         (log/debug "Component keys:" (keys component))
         (log/debug "Successfully created db connection:" conn)
         (assoc component :conn conn))))
