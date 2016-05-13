@@ -3,7 +3,7 @@
   Ideally, this runner will be used by an instance of the LCMAP REST server
   that is *not* running in Docker, but instead being run (deployed) on a
   non-virtualized operating system."}
-  lcmap.see.job.ccdc-docker-runner
+  lcmap.see.model.ccdc-docker
   (:require [clojure.tools.logging :as log]
             [clj-commons-exec :as exec]
             [lcmap.see.job.tracker :as jt]

@@ -1,4 +1,4 @@
-(ns lcmap.see.job.sample-docker-runner
+(ns lcmap.see.model.sample-docker
   (:require [clojure.tools.logging :as log]
             [clj-commons-exec :as exec]
             [lcmap.see.job.tracker :as jt]))

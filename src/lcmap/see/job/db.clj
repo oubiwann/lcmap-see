@@ -9,12 +9,23 @@
             [lcmap.see.util :as util]))
 
 ;; XXX Use components instead? This is makes using a test configuration
-;;     somewhat difficult.
+;;     somewhat difficult ...  in order for this to work, we need to pass
+;;     the component instead of the connection -- sadly, the connection is
+;;     being used *everywhere*, so this will touch a lot of code. Created
+;;     LCMAP-549 to handle this.
 (def cfg ((init-cfg see-cfg/defaults) :lcmap.see))
 (def job-keyspace (:job-keyspace cfg))
 (def job-table (:job-table cfg))
 
+; (defn get-keyspace [conn]
+;   )
+
+; (defn get-table [conn]
+;   )
+
 (defn job? [conn job-id]
+  ;(log/debug "Connection keys:" (keys conn))
+  ;(log/debug "Connection cfg keys:" (keys (:cfg conn)))
   (cql/use-keyspace conn job-keyspace)
   (cql/select-async
     conn

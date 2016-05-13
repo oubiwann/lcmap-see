@@ -3,7 +3,7 @@
   REST service, piping results from the 'lcmap query rod' command (with
   several command line options) to the 'ccdc' executable (also with several
   command line options)."}
-  lcmap.see.job.ccdc-pipe-runner
+  lcmap.see.model.ccdc-pipe
   (:require [clojure.string :as string]
             [clojure.tools.logging :as log]
             [clj-commons-exec :as exec]
