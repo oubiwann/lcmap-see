@@ -8,6 +8,8 @@
             [lcmap.see.config :as see-cfg]
             [lcmap.see.util :as util]))
 
+;;; Supporting Constants ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
 ;; XXX Use components instead? This is makes using a test configuration
 ;;     somewhat difficult ...  in order for this to work, we need to pass
 ;;     the component instead of the connection -- sadly, the connection is
@@ -17,11 +19,26 @@
 (def job-keyspace (:job-keyspace cfg))
 (def job-table (:job-table cfg))
 
+;;; Supporting Functions ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
 ; (defn get-keyspace [conn]
 ;   )
 
-; (defn get-table [conn]
+; (defn get-job-table [conn]
 ;   )
+
+(defn get-results-table [conn job-id]
+  (cql/use-keyspace conn job-keyspace)
+  (-> conn
+      (cql/select
+        job-table
+        (query/columns :result_table)
+        (query/where [[= :job_id job-id]])
+        (query/limit 1))
+      (first)
+      (:result_table)))
+
+;;; API Functions ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defn job? [conn job-id]
   ;(log/debug "Connection keys:" (keys conn))
