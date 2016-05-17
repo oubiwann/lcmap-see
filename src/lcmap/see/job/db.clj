@@ -75,12 +75,11 @@
                     {:status new-status}
                     (query/where [[= :job_id job-id]])))
 
-
-(defn get-job-result [db job-id result-table status-func]
-  (match [(first @(result? (:conn db) result-table job-id))]
+(defn get-job-result [db-conn job-id result-table status-func]
+  (match [(first @(result? db-conn result-table job-id))]
     [[]]
-      (status-func db job-id)
+      (status-func db-conn job-id)
     [nil]
-      (status-func db job-id)
+      (status-func db-conn job-id)
     [result]
       (status-func result)))
