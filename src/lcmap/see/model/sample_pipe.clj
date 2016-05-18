@@ -26,8 +26,8 @@
                           (string/join " " cmd2)
                           (string/join " " cmd3)]))
     (let [result (map deref promises)
-          all-zero-exit? (every? #(= 0 %) (map #(:exit %) result))
-          all-no-errors? (every? nil? (map #(:err %) result))]
+          all-zero-exit? (every? zero? (map :exit result))
+          all-no-errors? (every? nil? (map :err result))]
       (if (and all-zero-exit? all-no-errors?)
         (:out (last result))
         [:error "unexpected output" result]))))
