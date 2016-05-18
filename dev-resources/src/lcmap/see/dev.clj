@@ -16,6 +16,7 @@
             [clojure.tools.namespace.repl :as repl]
             [clojure.walk :refer [macroexpand-all]]
             [com.stuartsierra.component :as component]
+            [twig.core :as logger]
             ;; data
             [clojure.data.json :as json]
             [clojurewerkz.cassaforte.client :as cc]
@@ -37,6 +38,7 @@
 (def system nil)
 
 (defn init []
+  (logger/set-level! ['lcmap] :info)
   (if (util/in? [:initialized :started :running] state)
     (log/error "System has aready been initialized.")
     (do
@@ -110,7 +112,6 @@
 (defn reset []
   (stop)
   (deinit)
-  (config/get-config :force-reload)
   (refresh :after 'lcmap.see.dev/run))
 
 ;;; Aliases
