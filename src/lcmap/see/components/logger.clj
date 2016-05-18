@@ -13,13 +13,26 @@
             [com.stuartsierra.component :as component]
             [twig.core :as logger]))
 
+(defn get-log-level
+  "A convenience function for use in the Logger component."
+  [component]
+  (keyword (get-in component [:cfg :lcmap.logging :level])))
+
+(defn get-namespaces
+  "A convenience function for use in the Logger component."
+  [component]
+  (->> [:cfg :lcmap.logging :namespaces]
+       (get-in component)
+       (map symbol)
+       (into [])))
+
 (defrecord Logger []
   component/Lifecycle
 
   (start [component]
     (log/info "Setting up LCMAP SEE logging ...")
-    (let [log-level (get-in component [:cfg :env :log-level])
-          namespaces (get-in component [:cfg :logging-namespaces])]
+    (let [log-level (get-log-level component)
+          namespaces (get-namespaces component)]
       (log/info "Using log-level" log-level)
       (logger/set-level! namespaces log-level)
       ;;(dorun (map #(logger/set-level! % log-level) namespaces))
