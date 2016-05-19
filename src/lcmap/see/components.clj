@@ -39,9 +39,9 @@
   (:require [clojure.tools.logging :as log]
             [com.stuartsierra.component :as component]
             [lcmap.config.components.config :as config]
+            [lcmap.logger.components.logger :as logger]
             [lcmap.see.components.db :as db]
             [lcmap.see.components.eventd :as eventd]
-            [lcmap.see.components.logger :as logger]
             [lcmap.see.components.system :as system]
             [lcmap.see.config]))
 
