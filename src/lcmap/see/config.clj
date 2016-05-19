@@ -1,5 +1,5 @@
 (ns lcmap.see.config
-  (:require [lcmap.config.helpers :refer :all]
+  (:require [lcmap.config.helpers :as helpers]
             [schema.core :as schema]))
 
 (def opt-spec [])
@@ -20,7 +20,7 @@
          {schema/Keyword schema/Any}))
 
 (def defaults
-  {:ini *lcmap-config-ini*
+  {:ini helpers/*lcmap-config-ini*
    :args *command-line-args*
    :spec opt-spec
    :schema cfg-schema})
