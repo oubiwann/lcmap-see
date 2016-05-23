@@ -45,16 +45,14 @@
 (defn run-model
   "This a prototype CCDC model which runs the lcmap command line tool's 'rod' query
   and pipes the results to ccdc as input."
-  [conn eventd job-id default-row result-table
-                 spectra x-val y-val start-time end-time
-                 row col in-dir out-dir scene-list verbose]
+  [component job-id default-row result-table spectra x-val y-val
+   start-time end-time row col in-dir out-dir scene-list verbose]
   ;; Define some vars for pedagogical clarity
   (let [func #'exec-pipe-run
         args [job-id spectra x-val y-val start-time end-time
                      row col in-dir out-dir scene-list verbose]]
     (log/debugf "run-model has [func args]: [%s %s]" func args)
-    (jt/track-job conn
-                  eventd
+    (jt/track-job component
                   job-id
                   default-row
                   result-table

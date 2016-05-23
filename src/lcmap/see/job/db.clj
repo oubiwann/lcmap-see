@@ -21,6 +21,9 @@
 
 ;;; Supporting Functions ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
+(defn get-conn [component]
+  (get-in component [:jobdb :conn]))
+
 ; (defn get-keyspace [conn]
 ;   )
 

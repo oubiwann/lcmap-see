@@ -16,12 +16,11 @@
       1 (:err result)
       [:error "unexpected output" result])))
 
-(defn run-model [conn eventd job-id default-row result-table docker-tag year]
+(defn run-model [component job-id default-row result-table docker-tag year]
   ;; Define some vars for pedagogical clarity
   (let [func #'exec-docker-run
         args [job-id docker-tag year]]
-    (jt/track-job conn
-                  eventd
+    (jt/track-job component
                   job-id
                   default-row
                   result-table

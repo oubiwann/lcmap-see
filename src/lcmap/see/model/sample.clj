@@ -14,12 +14,11 @@
   @(exec/sh ["sleep" (str sleep-time)])
   (:out @(exec/sh ["cal" year])))
 
-(defn run-model [conn eventd job-id default-row result-table seconds year]
+(defn run-model [component job-id default-row result-table seconds year]
   ;; Define some vars for pedagogical clarity
   (let [func #'long-running-func
         args [job-id seconds year]]
-    (jt/track-job conn
-                  eventd
+    (jt/track-job component
                   job-id
                   default-row
                   result-table

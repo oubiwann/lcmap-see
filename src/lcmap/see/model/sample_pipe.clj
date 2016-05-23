@@ -36,20 +36,19 @@
   "This sample model runs a series of unix commands (one piped to the next) in
   order to demonstrate how models can be configured that have this requirement.
 
-  In the particular case of this sample model, the following Linux shell utilities
-  pipe output to each other:
+  In the particular case of this sample model, the following Linux shell
+  utilities pipe output to each other:
 
   * ``cat /etc/hosts`` (with the optional ``--number`` flag)
   * ``uniq`` (with the optional ``--count`` flag)
   * ``wc`` (with the optional ``--bytes``, ``--words``, or ``--lines`` flags)"
-  [conn eventd job-id default-row result-table
-                 line-number unique-count bytes words lines]
+  [component job-id default-row result-table line-number unique-count bytes
+   words lines]
   ;; Define some vars for pedagogical clarity
   (let [func #'exec-pipe-run
         args [job-id line-number unique-count bytes words lines]]
     (log/debugf "run-model has [func args]: [%s %s]" func args)
-    (jt/track-job conn
-                  eventd
+    (jt/track-job component
                   job-id
                   default-row
                   result-table

@@ -26,10 +26,7 @@
                  [clojurewerkz/cassaforte "2.0.0"]
                  [net.jpountz.lz4/lz4 "1.3.0"]
                  [org.xerial.snappy/snappy-java "1.1.2"]
-                 ;; XXX once lcmap-client-clj is released and is no longer
-                 ;; being used from the local checkouts directory, we will
-                 ;; uncomment the dependancy below and remove the temporary
-                 ;; dependancies below.
+                 ;; LCMAP Components
                  [gov.usgs.eros/lcmap-config "0.5.0-SNAPSHOT"]
                  [gov.usgs.eros/lcmap-logger "0.5.0-SNAPSHOT"]
                  [gov.usgs.eros/lcmap-client-clj "0.5.0-SNAPSHOT"]

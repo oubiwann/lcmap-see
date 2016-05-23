@@ -34,14 +34,13 @@
       1 (:err result)
       [:error "unexpected output" result])))
 
-(defn run-model [conn eventd job-id default-row result-table
+(defn run-model [component job-id default-row result-table
                  row col in-dir out-dir scene-list verbose]
   ;; Define some vars for pedagogical clarity
   (let [func #'exec-docker-run
         args [job-id row col in-dir out-dir scene-list verbose]]
     (log/debugf "run-model has [func args]: [%s %s]" func args)
-    (jt/track-job conn
-                  eventd
+    (jt/track-job component
                   job-id
                   default-row
                   result-table

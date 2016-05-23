@@ -16,6 +16,17 @@
 
 (declare dispatch-handler)
 
+;;; Supporting Constants ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+;; TBD
+
+;;; Supporting Functions ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(defn get-event-mgr [component]
+  (get-in component [:eventd :eventd]))
+
+;;; API ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
 (defsfn job-result-exists? [db-conn result-table job-id]
   (log/debug "Got args:" db-conn result-table job-id)
   (match [(first @(db/result? db-conn result-table job-id))]
@@ -89,13 +100,15 @@
     [:done] (done args)))
 
 (defn track-job
-  [db-conn event-server job-id default-row result-table func-args]
-  (log/debug "Using event server" event-server "with db connection" db-conn)
-  (actors/notify! event-server
-                  {:type :job-track-init
-                   :job-id job-id
-                   :db-conn db-conn
-                   :default-row default-row
-                   :result-table result-table
-                   :result func-args
-                   :service event-server}))
+  [component job-id default-row result-table func-args]
+  (let [db-conn (db/get-conn component)
+        event-server (get-event-mgr component)]
+    (log/debug "Using event server" event-server "with db connection" db-conn)
+    (actors/notify! event-server
+                    {:type :job-track-init
+                     :job-id job-id
+                     :db-conn db-conn
+                     :default-row default-row
+                     :result-table result-table
+                     :result func-args
+                     :service event-server})))
