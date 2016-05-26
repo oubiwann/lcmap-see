@@ -15,7 +15,11 @@
 (def docker-tag (format "%s/%s" dockerhub-org dockerhub-repo))
 
 (defn exec-docker-run
-  ""
+  "This is the function that actually calls the science model. This model
+  accomplishes this by calling the ccdc Docker image. This is essentially a
+  pass-through to the ccdc executable in the Docker image, so the Docker ``run``
+  command takes all the same parameters/flags that would be given if the ccdc
+  executable was getting called directly."
   [[job-id row col in-dir out-dir scene-list verbose]]
   (let [verbose-flag (util/make-flag "--verbose" verbose :unary? true)
         in-dir-flag (util/make-flag "--inDir" in-dir)

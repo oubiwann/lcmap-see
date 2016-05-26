@@ -11,7 +11,16 @@
             [lcmap.see.util :as util]))
 
 (defn exec-pipe-run
-  ""
+  "This is the function that actually calls the science model. This model
+  accomplishes this in two stages:
+
+  1) it calls to the lcmap command line tool, querying for rod data
+  2) it pipes these results to the ccdc executable
+
+  In order for this to work, the Python environment for lcmap needs to
+  have been setup (requirements installed) and set to active. Also, the
+  ccdc needs to have been compiled and installed to a location that is
+  on the system PATH."
   [[job-id spectra x-val y-val start-time end-time
     row col in-dir out-dir scene-list verbose]]
   (let [;; lcmap cmdline tool flags
