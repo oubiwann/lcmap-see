@@ -1,4 +1,4 @@
-(ns ^{:doc
+(ns lcmap.see.components
   "LCMAP SEE system components
 
   Large applications often consist of many stateful processes which must be
@@ -34,8 +34,7 @@
   For more information on the Clojure component library, see:
 
    * https://github.com/stuartsierra/component
-   * https://www.youtube.com/watch?v=13cmHf_kt-Q"}
-  lcmap.see.components
+   * https://www.youtube.com/watch?v=13cmHf_kt-Q"
   (:require [clojure.tools.logging :as log]
             [com.stuartsierra.component :as component]
             [lcmap.config.components.config :as config]

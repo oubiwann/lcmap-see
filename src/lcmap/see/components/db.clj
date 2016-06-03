@@ -1,9 +1,8 @@
-(ns ^{:doc
+(ns lcmap.see.components.db
   "Database LCMAP REST Service system component
 
   For more information, see the module-level code comments in
-  ``lcmap.see.components``."}
-  lcmap.see.components.db
+  ``lcmap.see.components``."
   (:require [clojure.tools.logging :as log]
             [com.stuartsierra.component :as component]
             [clojurewerkz.cassaforte.client :as cc]

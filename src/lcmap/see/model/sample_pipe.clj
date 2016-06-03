@@ -1,8 +1,7 @@
-(ns ^{:doc
+(ns lcmap.see.model.sample-pipe
   "This sample runner demonstrates kicking off a job that executes a series
   of piped commands on the system local to the LCMAP REST server, capturing
-  standard out."}
-  lcmap.see.model.sample-pipe
+  standard out."
   (:require [clojure.tools.logging :as log]
             [clojure.string :as string]
             [clj-commons-exec :as exec]

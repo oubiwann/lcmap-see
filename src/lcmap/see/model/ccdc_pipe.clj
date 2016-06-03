@@ -1,9 +1,8 @@
-(ns ^{:doc
+(ns lcmap.see.model.ccdc-pipe
   "This runner allows the CCDC mode to be run on the same server as the LCMAP
   REST service, piping results from the 'lcmap query rod' command (with
   several command line options) to the 'ccdc' executable (also with several
-  command line options)."}
-  lcmap.see.model.ccdc-pipe
+  command line options)."
   (:require [clojure.string :as string]
             [clojure.tools.logging :as log]
             [clj-commons-exec :as exec]

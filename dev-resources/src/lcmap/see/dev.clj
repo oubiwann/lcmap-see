@@ -1,4 +1,4 @@
-(ns ^{:doc
+(ns lcmap.see.dev
   "LCMAP SEE development namespace
 
   This namespace is particularly useful when doing active development on the
@@ -10,8 +10,7 @@
 
   and then reload with all the latest changes -- without having to restart
   the JVM. This namespace can be leveraged to significantly improve
-  development time, especially during debugging or progotyping stages."}
-  lcmap.see.dev
+  development time, especially during debugging or progotyping stages."
   (:require [clojure.tools.logging :as log]
             [clojure.tools.namespace.repl :as repl]
             [clojure.walk :refer [macroexpand-all]]
