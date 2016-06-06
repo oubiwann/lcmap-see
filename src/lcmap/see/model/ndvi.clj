@@ -1,6 +1,5 @@
-(ns ^{:doc
-  ""}
-  lcmap.see.model.ndvi
+(ns lcmap.see.model.ndvi
+  ""
   (:require [clojure.tools.logging :as log]
             [clj-commons-exec :as exec]
             [lcmap.see.job.tracker :as jt]))
@@ -31,22 +30,15 @@
       1 (:err result)
       [:error "unexpected output" result])))
 
-(defn before
-  ""
-  [])
-
-(defn after
-  ""
-  [])
+;; XXX This is a way of running a model without
+;; saving any information about the job. This
+;; is still a WIP but is good enough to merge
+;; to master.
 
 (defn run
   ""
   [job-id x y t1 t2]
-  ;; before ... track job inputs
-  ;; execute
-  ;; after  ... track job outputs
   (execute job-id x y t1 t2))
-
 
 #_(defn run-model [job-id x y t1 t2]
   (let [func #'execute
