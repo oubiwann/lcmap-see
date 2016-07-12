@@ -8,24 +8,24 @@
                  [org.clojure/data.codec "0.1.0"]
                  [org.clojure/data.json "0.2.6"]
                  [org.clojure/data.xml "0.0.8"]
-                 [org.clojure/core.memoize "0.5.8"]
+                 [org.clojure/core.memoize "0.5.9"]
                  ;; Componentization
-                 [com.stuartsierra/component "0.3.0"]
+                 [com.stuartsierra/component "0.3.1"]
                  ;; Logging and Error Handling -- note that we need to explicitly pull
                  ;; in a version of slf4j so that we don't get conflict messages on the
                  ;; console
-                 [dire "0.5.3"]
+                 [dire "0.5.4"]
                  [slingshot "0.12.2"]
                  ;; Job Tracker
-                 [org.clojure/core.memoize "0.5.6"] ; These two are not used directly, but
-                 [org.clojure/core.cache "0.6.4"]   ; without them an exception is raised
-                 [co.paralleluniverse/pulsar "0.7.3"]
+                 [org.clojure/core.memoize "0.5.9"] ; These two are not used directly, but
+                 [org.clojure/core.cache "0.6.5"]   ; without them an exception is raised
+                 [co.paralleluniverse/pulsar "0.7.5"]
                  [org.clojars.hozumi/clj-commons-exec "1.2.0"]
                  [digest "1.4.4"]
                  ;; DB
                  [clojurewerkz/cassaforte "2.0.2"]
                  [net.jpountz.lz4/lz4 "1.3.0"]
-                 [org.xerial.snappy/snappy-java "1.1.2"]
+                 [org.xerial.snappy/snappy-java "1.1.2.6"]
                  ;; Distributed Computation
                  [clojusc/mesomatic "0.28.2-SNAPSHOT"]
                  ;; LCMAP Components
@@ -39,20 +39,20 @@
                  ;; is worked around by explicitly including Apache Java HTTP
                  ;; client library).
                  ;; XXX temp dependencies:
-                 [org.apache.httpcomponents/httpclient "4.5"]
+                 [org.apache.httpcomponents/httpclient "4.5.2"]
                  [clojure-ini "0.0.2"]
-                 [clj-http "2.0.0"]
+                 [clj-http "3.1.0"]
                  ;; Data types, encoding, etc.
-                 [byte-streams "0.2.0"]
-                 [clj-time "0.11.0"]
-                 [commons-codec "1.9"]
+                 [byte-streams "0.2.2"]
+                 [clj-time "0.12.0"]
+                 [commons-codec "1.10"]
                  ;; Geospatial libraries
                  [clj-gdal "0.3.5-SNAPSHOT"]
                  ;; Dev and project metadata
-                 [leiningen-core "2.5.3"]]
+                 [leiningen-core "2.6.1"]]
   :plugins [[lein-ring "0.9.7"]
-            [lein-pprint "1.1.1"]
-            [lein-codox "0.9.1"]
+            [lein-pprint "1.1.2"]
+            [lein-codox "0.9.5"]
             [lein-simpleton "1.3.0"]]
   :source-paths ["src" "test/support/auth-server/src"]
   :java-agents [[co.paralleluniverse/quasar-core "0.7.3"]]
