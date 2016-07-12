@@ -26,6 +26,8 @@
                  [clojurewerkz/cassaforte "2.0.2"]
                  [net.jpountz.lz4/lz4 "1.3.0"]
                  [org.xerial.snappy/snappy-java "1.1.2"]
+                 ;; Distributed Computation
+                 [clojusc/mesomatic "0.28.2-SNAPSHOT"]
                  ;; LCMAP Components
                  [gov.usgs.eros/lcmap-config "0.5.0-SNAPSHOT"]
                  [gov.usgs.eros/lcmap-logger "0.5.0-SNAPSHOT"]
