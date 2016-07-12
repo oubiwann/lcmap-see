@@ -24,28 +24,14 @@
   [job-id x y t1 t2]
   (let [cmd (command job-id x y t1 t2)
         result @(exec/sh cmd)]
-    (log/debugf "exec '%s' results: %s" "ndvi model" result)
+    (log/debugf "exec '%s' results: %s" "ndvi model" cmd result)
     (case (:exit result)
       0 (:out result)
       1 (:err result)
       [:error "unexpected output" result])))
 
-;; XXX This is a way of running a model without
-;; saving any information about the job. This
-;; is still a WIP but is good enough to merge
-;; to master.
-
 (defn run
   ""
   [job-id x y t1 t2]
+  (log/debugf "running NDVI job: <%s,%s:%s/%s>" x y t1 t2)
   (execute job-id x y t1 t2))
-
-#_(defn run-model [job-id x y t1 t2]
-  (let [func #'execute
-        args [job-id x y t1 t2]]
-    (log/debugf "run-model has [func args]: [%s %s]" func args)
-    (jt/track-job component
-                  job-id
-                  default-row
-                  result-table
-                  [func args])))
