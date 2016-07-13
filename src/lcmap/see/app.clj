@@ -1,7 +1,7 @@
 (ns lcmap.see.app
   (:require [clojure.tools.logging :as log]
             [com.stuartsierra.component :as component]
-            [twig.core :as twig]
+            [clojusc.twig :as logger]
             [lcmap.see.components :as components]
             [lcmap.see.util :as util])
   (:gen-class))
@@ -16,7 +16,7 @@
   [& args]
   ;; Set the initial log-level before the components set the log-levels for
   ;; the configured namespaces
-  (twig/set-level! ['lcmap] :info)
+  (logger/set-level! ['lcmap] :info)
   (let [system (components/init)
         local-ip  (.getHostAddress (java.net.InetAddress/getLocalHost))]
     (log/info "LCMAP SEE service's local IP address:" local-ip)
