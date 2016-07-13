@@ -1,6 +1,6 @@
-# lcmap-see
+# lcmap,see
 
-*Published Documentation for the LCMAP-SEE project*
+*Published Documentation for the LCMAP science and execution environment project*
 
 This content in this branch is generated automatically by a ``make`` target in
 the [lcmap-see](http://github.com/usgs-eros/lcmap-see) project. It is pushed
