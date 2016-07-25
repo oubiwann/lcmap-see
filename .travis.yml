@@ -5,7 +5,8 @@ script:
 jdk:
   - oraclejdk8
   #- oraclejdk7
-  - openjdk6
+  # Parallel Universe agent doesn't support JDK 6.
+  #- openjdk6
   - openjdk7
   #- openjdk8
 #addons:
