@@ -1,6 +1,7 @@
 (ns lcmap.see.config
   ""
   (:require [lcmap.config.helpers :as helpers]
+            [lcmap.logger.config :as logger-cfg]
             [schema.core :as schema]))
 
 (def opt-spec [])
@@ -12,12 +13,9 @@
                :job-keyspace schema/Str
                :job-table schema/Str}})
 
-(def logger-schema
-  {:lcmap.logger {:level schema/Str
-                   :namespaces [schema/Str]}})
 (def cfg-schema
   (merge see-schema
-         logger-schema
+         logger-cfg/logger-schema
          {schema/Keyword schema/Any}))
 
 (def defaults
