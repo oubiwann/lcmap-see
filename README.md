@@ -1,9 +1,8 @@
 # lcmap.see
 
-*LCMAP Distributed Science Execution Environment*
-
-
 [![Build Status][travis-badge]][travis][![Clojars Project][clojars-badge]][clojars]
+
+*LCMAP Distributed Science Execution Environment*
 
 [![LCMAP open source project logo][lcmap-logo]][lcmap-logo-large]
 
