@@ -39,6 +39,7 @@
                  [org.xerial.snappy/snappy-java]
                  ;; Distributed Computation
                  [clojusc/mesomatic]
+                 [clojusc/mesomatic-async]
                  ;; LCMAP Components
                  [gov.usgs.eros/lcmap-config]
                  [gov.usgs.eros/lcmap-logger]
