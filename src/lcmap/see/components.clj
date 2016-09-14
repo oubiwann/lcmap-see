@@ -39,6 +39,7 @@
             [com.stuartsierra.component :as component]
             [lcmap.config.components.config :as config]
             [lcmap.logger.components.logger :as logger]
+            [lcmap.see.components.backend :as backend]
             [lcmap.see.components.db :as db]
             [lcmap.see.components.eventd :as eventd]
             [lcmap.see.components.system :as system]
@@ -50,6 +51,10 @@
     :logger (component/using
               (logger/new-logger)
               [:cfg])
+    :backend (component/using
+              (backend/new-backend)
+              [:cfg
+               :logger])
     :jobdb (component/using
              (db/new-job-client)
              [:cfg
@@ -62,6 +67,7 @@
            (system/new-lcmap-see-toplevel)
            [:cfg
             :logger
+            :backend
             :jobdb
             :eventd])))
 
