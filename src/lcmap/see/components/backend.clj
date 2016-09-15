@@ -13,7 +13,7 @@
   [cfg]
   (case (:backend cfg)
     "ec2" nil
-    "mesos" nil
+    "mesos" (mesos/new-backend cfg)
     "native" (native/new-backend cfg)
     "nexus" nil))
 
