@@ -1,11 +1,12 @@
-(ns lcmap.see.backend.native)
+(ns lcmap.see.backend.native
+  (:require [lcmap.see.backend.core :refer [ExecutionBackend]]))
 
-(defn setup
+(defrecord NativeBackend [name cfg]
+  ExecutionBackend
+  (set-up [this] this)
+  (tear-down [this] this))
+
+(defn new-backend
   ""
   [cfg]
-  :native-backend-setup)
-
-(defn tear-down
-  ""
-  [cfg]
-  :native-backend-teardown)
+  (->NativeBackend :native cfg))
