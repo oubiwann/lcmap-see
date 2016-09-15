@@ -3,7 +3,7 @@
             [clojure.string :as string]
             [clojure.tools.logging :as log]
             [lcmap.see.backend.core :refer [ExecutionBackend]]
-            [leiningen.core.main :as lein]
+            [lcmap.see.util :as util]
             [mesomatic.scheduler :as scheduler :refer [scheduler-driver]])
   (:import java.util.UUID))
 
@@ -36,12 +36,6 @@
   (->> (UUID/randomUUID)
        (str)
        (assoc {} :value)))
-
-(defn finish
-  ""
-  [& {:keys [exit-code]}]
-  (lein/exit exit-code)
-  exit-code)
 
 ;;; >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 ;;; Mesos payload utility functions
@@ -183,7 +177,7 @@
                 (get-error-msg payload))
     (async/close! (get-channel state))
     (scheduler/stop! (get-driver state))
-    (finish :exit-code 127)
+    (util/finish :exit-code 127)
     state))
 
 (defn check-task-finished
@@ -197,7 +191,7 @@
       (if (>= task-count (get-max-tasks state))
         (do
           (scheduler/stop! (get-driver state))
-          (finish :exit-code 0)
+          (util/finish :exit-code 0)
           new-state)
         new-state))
     state))
@@ -217,7 +211,7 @@
                   (:source status)
                   (:message status))
       (scheduler/abort! (get-driver state))
-      (finish :exit-code 127)
+      (util/finish :exit-code 127)
       state)
     state))
 

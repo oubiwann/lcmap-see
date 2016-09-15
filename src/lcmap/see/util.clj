@@ -3,7 +3,14 @@
   (:require [clojure.core.memoize :as memo]
             [clojure.string :as string]
             [clojure.tools.logging :as log]
-            [digest]))
+            [digest]
+            [leiningen.core.main :as lein]))
+
+(defn finish
+  ""
+  [& {:keys [exit-code]}]
+  (lein/exit exit-code)
+  exit-code)
 
 (defn serialize [args]
   (cond (list? args)
