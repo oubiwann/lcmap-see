@@ -1,4 +1,4 @@
-(ns lcmap.see.model.ccdc-docker
+(ns lcmap.see.backend.native.models.ccdc-docker
   "This is the job runner for the CCDC model that is run in a docker container.
   Ideally, this runner will be used by an instance of the LCMAP REST server
   that is *not* running in Docker, but instead being run (deployed) on a

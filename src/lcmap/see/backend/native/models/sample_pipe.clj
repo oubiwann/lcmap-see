@@ -1,4 +1,4 @@
-(ns lcmap.see.model.sample-pipe
+(ns lcmap.see.backend.native.models.sample-pipe
   "This sample runner demonstrates kicking off a job that executes a series
   of piped commands on the system local to the LCMAP REST server, capturing
   standard out."

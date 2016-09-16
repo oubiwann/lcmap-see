@@ -1,4 +1,4 @@
-(ns lcmap.see.model.sample
+(ns lcmap.see.backend.native.models.sample
   "This sample runner demonstrates kicking off a job that is executed on the
   system local to the LCMAP REST server, capturing standard out, with a
   synthetic (and variable) delay introduced to show asynchronous results."

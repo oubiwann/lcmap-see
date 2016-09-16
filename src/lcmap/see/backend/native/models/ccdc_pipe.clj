@@ -1,4 +1,4 @@
-(ns lcmap.see.model.ccdc-pipe
+(ns lcmap.see.backend.native.models.ccdc-pipe
   "This runner allows the CCDC mode to be run on the same server as the LCMAP
   REST service, piping results from the 'lcmap query rod' command (with
   several command line options) to the 'ccdc' executable (also with several

@@ -35,8 +35,7 @@
     (log/debug "Component keys" (keys component))
     (if-let [backend-impl (:backend component)]
       (do (log/debug "Using connection object:" backend-impl)
-          (backend/tear-down backend-impl)
-          ))
+          (backend/tear-down backend-impl)))
     (assoc component :backend nil)))
 
 (defn new-backend []

@@ -1,4 +1,4 @@
-(ns lcmap.see.model.ndvi
+(ns lcmap.see.backend.native.models.ndvi
   ""
   (:require [clojure.tools.logging :as log]
             [clj-commons-exec :as exec]
@@ -30,7 +30,7 @@
       1 (:err result)
       [:error "unexpected output" result])))
 
-(defn run
+(defn run-model
   ""
   [job-id x y t1 t2]
   (log/debugf "running NDVI job: <%s,%s:%s/%s>" x y t1 t2)
