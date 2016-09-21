@@ -1,17 +1,45 @@
 (ns lcmap.see.backend.core
   (:import [clojure.lang Keyword]))
 
-(defprotocol ExecutionBackend
-  "An interface that all backends need to implement."
+(def backend-ns "lcmap.see.backend.")
+(def models-infix ".models.")
+(def run-function "run-model")
+
+(defn get-model-ns
+  "This utility function defines the standard namespace for SEE science models.
+  The namespace is assembled from constants and two passed arguments."
+  [^Keyword backend ^String model-name]
+  (str backend-ns (name backend) models-infix model-name))
+
+(defn get-model-fn
+  "This utility function uses the get-model-ns function to define the standard
+  for full namespace + function name for SEE science models."
+  [^Keyword backend ^String model-name]
+  (-> backend
+      (get-model-ns model-name)
+      (symbol)
+      (ns-resolve (symbol run-function))))
+
+(defprotocol IComponentable
+  "An interface for backends which need to be stopped and started as part of a
+  system component."
   (set-up [this]
     "Connecting clients, instantiating drivers, or starting services.")
   (tear-down [this]
-    "Reversing everything done in set-up.")
+    "Reversing everything done in set-up."))
+
+(defprotocol IModelable
+  "An interface for backends which need to provide a means of getting model
+  information."
   (get-model [this model-name]
     "Given the namespace and the function name (as strings), return a reference
-    to the function that can be called."))
+    to the function that can be called to run a given model."))
 
-(defn get-models-ns
-  ""
-  [^Keyword backend ^String model-name]
-  (str "lcmap.see.backend." (name backend) ".models." model-name))
+(def componentable-default-behaviour
+  "Default implementations for IComponentable."
+  {:set-up (fn [this] this)
+   :tear-down (fn [this] this)})
+
+(def modelable-default-behaviour
+  "Default implementations for IModelable."
+  {:get-model (fn [this model-name] (get-model-fn (:name this) model-name))})

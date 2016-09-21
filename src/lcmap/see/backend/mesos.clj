@@ -2,7 +2,7 @@
   (:require [clojure.core.async :as async :refer [chan <! go]]
             [clojure.string :as string]
             [clojure.tools.logging :as log]
-            [lcmap.see.backend.core :refer [ExecutionBackend]]
+            [lcmap.see.backend.core :as see]
             [lcmap.see.util :as util]
             [mesomatic.scheduler :as scheduler :refer [scheduler-driver]])
   (:import java.util.UUID))
@@ -11,20 +11,20 @@
 ;;; LCMAP SEE backend (interface) implementation for Mesos
 ;;; >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 ;;;
-;;; The following record is designed to be used with the ExecutionBackend
-;;; protocol in order to create a long-running data structure that holds
-;;; all needed information for any Mesos framework to start up, run executors
-;;; and/or tasks, and properly manage itself.
+;;; The following record is designed to be used with the interfaces (protocols)
+;;; defined for generilzed SEE backends. The record should support data needed
+;;; by the backend implementations in order to perform the duties of a
+;;; component, a science model, and any other defined protocols.
 
-(defrecord MesosBackend [name cfg]
-  ExecutionBackend
-  (set-up [this] this)
-  (tear-down [this] this))
+(defrecord MesosBackend [name cfg])
+
+(extend MesosBackend see/IComponentable see/componentable-default-behaviour)
+(extend MesosBackend see/IModelable see/modelable-default-behaviour)
 
 (defn new-backend
   ""
   [cfg]
-  (->MesosBackend :native cfg))
+  (->MesosBackend :mesos cfg))
 
 ;;; >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 ;;; LCMAP SEE Mesos utility functions
