@@ -1,9 +1,9 @@
 (ns lcmap.see.backend.mesos.models.common.payload
   "These are intended to make the callbacks below easier to read, while
-   providing a little buffer around data and implementation: if (when) the
-   Mesos messaging API/data structure changes (again), only the functions
-   below will need to be changed (you won't have to dig through the rest of
-   the code looking for data structures to update)."
+  providing a little buffer around data and implementation: if (when) the
+  Mesos messaging API/data structure changes (again), only the functions
+  below will need to be changed (you won't have to dig through the rest of
+  the code looking for data structures to update)."
   (:require [clojure.tools.logging :as log]
             [clojure.string :as string]
             [clojusc.twig :refer [pprint]]))
