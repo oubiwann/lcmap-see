@@ -12,7 +12,8 @@
                :db-pass schema/Str
                :job-keyspace schema/Str
                :job-table schema/Str
-               :backend schema/Str}})
+               :backend schema/Str
+               schema/Keyword schema/Any}})
 
 (def cfg-schema
   (merge see-schema
