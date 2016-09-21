@@ -26,34 +26,6 @@
   (->MesosBackend :mesos cfg))
 
 ;;; >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-;;; Mesos state utility functions
-;;; >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-;;;
-;;; These are intended to make the callbacks below easier to read, while
-;;; providing a little buffer around data and implementation of our own state
-;;; data structure.
-
-(defn get-driver
-  ""
-  [state]
-  (:driver state))
-
-(defn get-channel
-  ""
-  [state]
-  (:channel state))
-
-(defn get-exec-info
-  ""
-  [state]
-  (:exec-info state))
-
-(defn get-max-tasks
-  ""
-  [state]
-  (get-in state [:limits :max-tasks]))
-
-;;; >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 ;;; General framework functions for Mesomatic
 ;;; >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
