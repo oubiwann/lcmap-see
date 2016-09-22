@@ -7,3 +7,9 @@
   (->> (UUID/randomUUID)
        (str)
        (assoc {} :value)))
+
+(defn get-master
+  [component]
+  (str (get-in component [:see :mesos-host])
+       ":"
+       (get-in component [:see :mesos-port])))
