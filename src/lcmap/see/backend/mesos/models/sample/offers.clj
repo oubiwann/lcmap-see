@@ -3,9 +3,9 @@
   (:require [clojure.tools.logging :as log]
             [clojure.string :as string]
             [clojusc.twig :refer [pprint]]
-            [mesomatic.examples.common.resources :as resources]
-            [mesomatic.examples.standard.task :as task]
-            [mesomatic.examples.util :as util]))
+            [lcmap.see.backend.mesos.models.common.resources :as resources]
+            [lcmap.see.backend.mesos.models.sample.task :as task]
+            [lcmap.see.backend.mesos.util :as util]))
 
 (defn process-one
   ""

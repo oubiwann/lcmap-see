@@ -4,7 +4,6 @@
             [clojure.string :as string]
             [clojure.tools.logging :as log]
             [clojusc.twig :refer [pprint]]
-            [lcmap.see.backend.mesos.models.common. :as ]
             [mesomatic.async.executor :as async-executor]
             [mesomatic.async.scheduler :as async-scheduler]
             [mesomatic.scheduler :as scheduler :refer [scheduler-driver]]
@@ -177,24 +176,26 @@
 
 (defn run
   "This is the function that actually runs the framework."
-  [master task-count]
-  (log/info "Running example framework ...")
-  (let [ch (chan)
+  [component]
+  (log/info "Running LCMAP SEE sample Mesos framework ...")
+  (let [master (util/get-master component)
+        ch (chan)
         sched (async-scheduler/scheduler ch)
         driver (scheduler-driver sched
                                  framework-info-map
                                  master
                                  nil
                                  false)]
-    (log/debug "Starting example scheduler ...")
+    (log/debug "Starting sample scheduler ...")
     (scheduler/start! driver)
-    (log/debug "Reducing over example scheduler channel messages ...")
+    (log/debug "Reducing over sample scheduler channel messages ...")
     (a/reduce
       (partial comm-framework/wrap-handle-msg handle-msg)
       {:driver driver
        :channel ch
        :exec-info nil
        :launched-tasks 0
-       :limits (assoc limits :max-tasks task-count)}
+       :limits (assoc limits :max-tasks task-count)
+       :cfg component}
       ch)
     (scheduler/join! driver)))

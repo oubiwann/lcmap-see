@@ -7,8 +7,8 @@
             [mesomatic.async.executor :as async-executor]
             [mesomatic.executor :as executor :refer [executor-driver]]
             [mesomatic.types :as types]
-            [mesomatic.examples.standard.task :as task]
-            [mesomatic.examples.util :as util]))
+            [lcmap.see.backend.mesos.models.sample.task :as task]
+            [lcmap.see.backend.mesos.util :as util]))
 
 ;;; >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 ;;; Constants and Data
@@ -26,7 +26,7 @@
   ""
   []
   {:executor-id (util/get-uuid)
-   :name "Example Executor (Clojure)"})
+   :name "LCMAP SEE Sample Executor (Clojure)"})
 
 (defn cmd-info-map
   ""
@@ -60,9 +60,9 @@
   [state level message]
   (let [str-level (string/upper-case (name level))
         msg (format "%s - %s" str-level message)
-        bytes (.getBytes (str "Message from executor: " msg))]
+        bytes (.getBytes (str "Message from sample executor: " msg))]
     (if (= level :debug)
-      (log/debugf "Sending message to framework: %s ..." msg))
+      (log/debugf "Sending message to sample framework: %s ..." msg))
     (executor/send-framework-message! (:driver state) bytes)))
 
 (defn send-log-trace
@@ -98,7 +98,7 @@
     (executor/send-status-update!
       driver
       (task/status-running executor-id task-id))
-    (send-log-info state (str "Running task " task-id))
+    (send-log-info state (str "Running sample task " task-id))
 
     ;; This is where one would perform the requested task:
     ;; ...
@@ -109,18 +109,18 @@
     (executor/send-status-update!
       driver
       (task/status-finished executor-id task-id))
-    (send-log-info state (str "Finished task " task-id))))
+    (send-log-info state (str "Finished sample task " task-id))))
 
 (defn update-task-fail
   ""
   [task-id e state payload]
   (let [executor-id (get-executor-id payload)]
-    (send-log-error state (format "Got exception for task %s: %s"
+    (send-log-error state (format "Got exception for sample task %s: %s"
                                   task-id (pprint e)))
     (executor/send-status-update!
       (:driver state)
       (task/status-failed executor-id task-id))
-    (send-log-info state (format "Task %s failed" task-id))))
+    (send-log-info state (format "Sample task %s failed" task-id))))
 
 (defn run-task
   ""
@@ -144,26 +144,26 @@
 
 (defmethod handle-msg :registered
   [state payload]
-  (send-log-info state (str "Registered executor: " (get-executor-id payload)))
+  (send-log-info state (str "Registered sample executor: " (get-executor-id payload)))
   state)
 
 (defmethod handle-msg :reregistered
   [state payload]
   (send-log-info state
-                 (str "Reregistered executor: " (get-executor-id payload)))
+                 (str "Reregistered sample executor: " (get-executor-id payload)))
   state)
 
 (defmethod handle-msg :disconnected
   [state payload]
-  (send-log-info state (str "Executor has disconnected: " (pprint payload)))
+  (send-log-info state (str "Sample executor has disconnected: " (pprint payload)))
   state)
 
 (defmethod handle-msg :launch-task
   [state payload]
   (let [task-id (get-task-id payload)]
-    (send-log-info state (format "Launching task %s ..." task-id))
-    (log/debug "Task id:" task-id)
-    (send-log-trace state (str "Task payload: " (pprint payload)))
+    (send-log-info state (format "Launching sample task %s ..." task-id))
+    (log/debug "Sample task id:" task-id)
+    (send-log-trace state (str "Sample task payload: " (pprint payload)))
     (-> (run-task task-id state payload)
         (Thread.)
         (.start))
@@ -171,27 +171,27 @@
 
 (defmethod handle-msg :kill-task
   [state payload]
-  (send-log-info state (str "Killing task: " (pprint payload)))
+  (send-log-info state (str "Killing sample task: " (pprint payload)))
   state)
 
 (defmethod handle-msg :framework-message
   [state payload]
-  (send-log-info state (str "Got framework message: " (pprint payload)))
+  (send-log-info state (str "Got sample framework message: " (pprint payload)))
   state)
 
 (defmethod handle-msg :shutdown
   [state payload]
-  (send-log-info state (str "Shutting down executor: " (pprint payload)))
+  (send-log-info state (str "Shutting down sample executor: " (pprint payload)))
   state)
 
 (defmethod handle-msg :error
   [state payload]
-  (send-log-error state (str "Error in executor: " (pprint payload)))
+  (send-log-error state (str "Error in sample executor: " (pprint payload)))
   state)
 
 (defmethod handle-msg :default
   [state payload]
-  (send-log-warn (str "Unhandled message: " (pprint payload)))
+  (send-log-warn (str "Unhandled sample executor message: " (pprint payload)))
   state)
 
 ;;; >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
@@ -201,13 +201,13 @@
 (defn run
   ""
   [master]
-  (log/infof "Running example executor from %s ..." (util/cwd))
+  (log/infof "Running sample executor from %s ..." (util/cwd))
   (let [ch (chan)
         exec (async-executor/executor ch)
         driver (executor-driver exec)]
-    (log/debug "Starting example executor ...")
+    (log/debug "Starting sample executor ...")
     (executor/start! driver)
-    (log/debug "Reducing over example executor channel messages ...")
+    (log/debug "Reducing over sample executor channel messages ...")
     (a/reduce handle-msg {:driver driver
                           :ch ch} ch)
     (executor/join! driver)))

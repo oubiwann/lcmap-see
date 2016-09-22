@@ -4,8 +4,8 @@
             [clojure.string :as string]
             [mesomatic.types :as types]
             [clojusc.twig :refer [pprint]]
-            [mesomatic.examples.common.resources :as resources]
-            [mesomatic.examples.util :as util]))
+            [lcmap.see.backend.mesos.models.common.resources :as resources]
+            [lcmap.see.backend.mesos.util :as util]))
 
 (def task-info-map {:name "Example Task %d (Clojure)"
                     :count 1
