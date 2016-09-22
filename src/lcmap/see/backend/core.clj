@@ -15,10 +15,11 @@
   "This utility function uses the get-model-ns function to define the standard
   for full namespace + function name for SEE science models."
   [^Keyword backend ^String model-name]
-  (-> backend
-      (get-model-ns model-name)
-      (symbol)
-      (ns-resolve (symbol run-function))))
+  (->> run-function
+       (str "/")
+       (str (get-model-ns backend model-name))
+       (symbol)
+       (resolve)))
 
 (defprotocol IComponentable
   "An interface for backends which need to be stopped and started as part of a
