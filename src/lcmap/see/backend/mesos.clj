@@ -3,8 +3,7 @@
             [clojure.string :as string]
             [clojure.tools.logging :as log]
             [lcmap.see.backend.core :as see]
-            [lcmap.see.util :as util]
-            [mesomatic.scheduler :as scheduler :refer [scheduler-driver]]))
+            [lcmap.see.util :as util]))
 
 ;;; >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 ;;; LCMAP SEE backend implementation for Mesos
