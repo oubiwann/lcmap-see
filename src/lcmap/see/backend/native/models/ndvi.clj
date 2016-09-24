@@ -1,8 +1,7 @@
 (ns lcmap.see.backend.native.models.ndvi
   ""
   (:require [clojure.tools.logging :as log]
-            [clj-commons-exec :as exec]
-            [lcmap.see.job.tracker :as jt]))
+            [clj-commons-exec :as exec]))
 
 (def dockerhub-org "usgseros")
 (def dockerhub-repo "lcmap-model-wrapper")

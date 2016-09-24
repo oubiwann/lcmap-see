@@ -6,7 +6,8 @@
   (:require [clojure.string :as string]
             [clojure.tools.logging :as log]
             [clj-commons-exec :as exec]
-            [lcmap.see.job.tracker :as jt]
+            [lcmap.see.job.tracker :as tracker]
+            [lcmap.see.job.tracker.native]
             [lcmap.see.util :as util]))
 
 (defn exec-pipe-run
@@ -56,12 +57,14 @@
   [component job-id default-row result-table spectra x-val y-val
    start-time end-time row col in-dir out-dir scene-list verbose]
   ;; Define some vars for pedagogical clarity
-  (let [func #'exec-pipe-run
+  (let [backend (get-in component [:see :backend :name])
+        track-job (tracker/get-tracker-fn backend)
+        func #'exec-pipe-run
         args [job-id spectra x-val y-val start-time end-time
                      row col in-dir out-dir scene-list verbose]]
     (log/debugf "run-model has [func args]: [%s %s]" func args)
-    (jt/track-job component
-                  job-id
-                  default-row
-                  result-table
-                  [func args])))
+    (track-job component
+               job-id
+               default-row
+               result-table
+               [func args])))
