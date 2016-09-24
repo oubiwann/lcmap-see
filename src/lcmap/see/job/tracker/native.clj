@@ -1,4 +1,4 @@
-(ns lcmap.see.job.tracker
+(ns lcmap.see.job.tracker.native
   ""
   (:require [clojure.tools.logging :as log]
             [clojure.core.match :refer [match]]

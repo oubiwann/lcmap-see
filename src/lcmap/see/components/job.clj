@@ -6,20 +6,22 @@
   (:require [clojure.tools.logging :as log]
             [com.stuartsierra.component :as component]
             [co.paralleluniverse.pulsar.actors :as actors]
-            [lcmap.see.job.tracker]))
+            [lcmap.see.job.tracker :as tracker]
+            [lcmap.see.job.tracker.native]))
 
 (defrecord JobTracker []
   component/Lifecycle
 
   (start [component]
-    (log/info "Starting LCMAP SEE job tracker ...")
-    (let [job-tracker (actors/spawn (actors/gen-event))]
-      (actors/add-handler!
-        job-tracker
-        #'lcmap.see.job.tracker/dispatch-handler)
+    (let [see-cfg (get-in component [:cfg :lcmap.see])
+          backend (:backend see-cfg)
+          event-thread (actors/spawn (actors/gen-event))
+          dispatch-fn (tracker/get-dispatch-fn backend)]
+      (log/infof "Starting LCMAP SEE job tracker (%s) ..." backend)
+      (actors/add-handler! event-thread dispatch-fn)
       (log/debug "Component keys:" (keys component))
-      (log/debug "Successfully created job tracker" job-tracker)
-      (assoc component :tracker job-tracker)))
+      (log/debug "Successfully created job tracker thread" event-thread)
+      (assoc component :tracker event-thread)))
 
   (stop [component]
     (log/info "Stopping LCMAP SEE job tracker ...")
