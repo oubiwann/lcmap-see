@@ -1,4 +1,4 @@
-(ns lcmap.see.backend.core
+(ns lcmap.see.backend
   (:import [clojure.lang Keyword]))
 
 (def backend-ns "lcmap.see.backend.")
