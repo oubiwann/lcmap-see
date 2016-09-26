@@ -30,10 +30,10 @@
 
 (defsfn job-result-exists? [db-conn result-table job-id]
   (log/debug "Got args:" db-conn result-table job-id)
-  (match [(first @(db/result? db-conn result-table job-id))]
-    [[]] false
-    [nil] false
-    [_] true))
+  (case (first @(db/result? db-conn result-table job-id))
+    [] false
+    nil false
+    true))
 
 (defsfn init-job-track
   [{job-id :job-id db-conn :db-conn default-row :default-row service :service
@@ -92,13 +92,13 @@
 
 (defsfn dispatch-handler
   [{type :type :as args}]
-  (match [type]
-    [:job-track-init] (init-job-track args)
-    [:job-result-exists] (return-existing-result args)
-    [:job-run] (run-job args)
-    [:job-save-data] (save-job-data args)
-    [:job-track-finish] (finish-job-track args)
-    [:done] (done args)))
+  (case type
+    :job-track-init (init-job-track args)
+    :job-result-exists (return-existing-result args)
+    :job-run (run-job args)
+    :job-save-data (save-job-data args)
+    :job-track-finish (finish-job-track args)
+    :done (done args)))
 
 (defn track-job
   [component job-id default-row result-table func-args]
