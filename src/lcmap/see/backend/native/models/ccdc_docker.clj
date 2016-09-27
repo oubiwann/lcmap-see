@@ -6,6 +6,7 @@
   (:require [clojure.tools.logging :as log]
             [clj-commons-exec :as exec]
             [lcmap.see.job.tracker :as tracker]
+            [lcmap.see.job.tracker.base :as base]
             [lcmap.see.job.tracker.native]
             [lcmap.see.util :as util])
   (:import [java.io ByteArrayOutputStream]))
@@ -42,11 +43,12 @@
                  row col in-dir out-dir scene-list verbose]
   ;; Define some vars for pedagogical clarity
   (let [backend (get-in component [:see :backend :name])
-        track-job (tracker/get-tracker-fn backend)
+        ;; XXX use new method for simply calling the tracker directly
+        track-job (base/get-tracker-fn backend)
         func #'exec-docker-run
         args [job-id row col in-dir out-dir scene-list verbose]]
     (log/debugf "run-model has [func args]: [%s %s]" func args)
-    (track-job component
+    (track-job (get-in component [:see :job :tracker])
                job-id
                default-row
                result-table

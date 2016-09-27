@@ -63,3 +63,4 @@
 (def modelable-default-behaviour
   "Default implementations for IModelable."
   {:get-model (fn [this model-name] (get-model-fn (:name this) model-name))})
+

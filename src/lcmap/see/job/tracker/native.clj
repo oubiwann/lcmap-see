@@ -1,115 +1,71 @@
 (ns lcmap.see.job.tracker.native
   ""
   (:require [clojure.tools.logging :as log]
-            [clojure.core.match :refer [match]]
-            [co.paralleluniverse.pulsar.core :as pulsar]
             [co.paralleluniverse.pulsar.core :refer [defsfn]]
             [co.paralleluniverse.pulsar.actors :as actors]
-            [clojurewerkz.cassaforte.client :as cc]
-            [clojurewerkz.cassaforte.cql :as cql]
             [clojurewerkz.cassaforte.query :as query]
             [lcmap.client.status-codes :as status]
-            [lcmap.see.job.db :as db])
+            [lcmap.see.job.db :as db]
+            [lcmap.see.job.tracker :as tracker])
   (:refer-clojure :exclude [promise await bean])
   (:import [co.paralleluniverse.common.util Debug]
            [co.paralleluniverse.actors LocalActor]
            [co.paralleluniverse.strands Strand]))
 
-(declare dispatch-handler)
-
-;;; Supporting Constants ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-;; TBD
-
-;;; Supporting Functions ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-(defn get-event-mgr [component]
-  (get-in component [:job :tracker]))
-
-;;; API ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-(defsfn job-result-exists? [db-conn result-table job-id]
-  (log/debug "Got args:" db-conn result-table job-id)
-  (case (first @(db/result? db-conn result-table job-id))
-    [] false
-    nil false
-    true))
-
-(defsfn init-job-track
-  [{job-id :job-id db-conn :db-conn default-row :default-row service :service
-   result-table :result-table func-args :result :as args}]
-  (log/debug "Starting job tracking ...")
-  (if (job-result-exists? db-conn result-table job-id)
-    (actors/notify! service
-                    (into args {:type :job-result-exists}))
-    (do
-      @(db/insert-default db-conn job-id default-row)
-      (actors/notify! service
-                      (into args {:type :job-run})))))
-
-(defsfn return-existing-result
-  [{service :service :as args}]
-  (log/debug "Returning ID for existing job results ...")
-  (actors/notify! service
-                  (into args {:type :done})))
+;;; Implementation overrides for native tracker ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defsfn run-job
-  [{job-id :job-id db-conn :db-conn service :service
-    [job-func job-args] :result :as args}]
+  [this {job-id :job-id [job-func job-args] :result :as args}]
   (log/debugf "Running the job with function %s and args %s ..."
               job-func
               job-args)
   (let [job-data (job-func job-args)]
     (log/debugf "Got result of type %s with value %s" (type job-data) job-data)
-    @(db/update-status db-conn job-id status/pending-link)
+    @(db/update-status (:db-conn this) job-id status/pending-link)
     (log/debug "Finished job.")
-    (actors/notify! service
+    (actors/notify! (:event-thread this)
                     (into args {:type :job-save-data
                                 :result job-data}))))
 
-(defsfn save-job-data
-  [{job-id :job-id db-conn :db-conn result-table :result-table service :service
-    job-output :result :as args}]
-  (log/debugf "Saving job data \n%s with id %s to %s ..."
-                     job-output
-                     job-id
-                     result-table)
-  @(cql/insert-async db-conn result-table {:result_id job-id :result job-output})
-  (log/debug "Saved.")
-  (actors/notify! service
-                  (into args {:type :job-track-finish})))
-
-(defsfn finish-job-track
-  [{job-id :job-id db-conn :db-conn service :service result :result :as args}]
-  @(db/update-status db-conn job-id status/permanant-link)
-  (log/debug "Updated job traking data with" result)
-  (actors/notify! service
-                  (into args {:type :done})))
-
-(defsfn done
-  [{job-id :job-id :as args service :service}]
-  (log/debugf "Finished tracking for job %s." job-id))
+;; XXX Merge the following as a behaviour override
 
 (defsfn dispatch-handler
-  [{type :type :as args}]
+  [this {type :type :as args}]
   (case type
-    :job-track-init (init-job-track args)
-    :job-result-exists (return-existing-result args)
-    :job-run (run-job args)
-    :job-save-data (save-job-data args)
-    :job-track-finish (finish-job-track args)
-    :done (done args)))
+    :job-track-init (tracker/init-job-track this args)
+    :job-result-exists (tracker/return-existing-result this args)
+    :job-run (run-job this args)
+    :job-save-data (tracker/save-job-data this args)
+    :job-track-finish (tracker/finish-job-track this args)
+    :done (tracker/done this args)))
+
+;; XXX Move the following into the parent namespace
 
 (defn track-job
-  [component job-id default-row result-table func-args]
-  (let [db-conn (db/get-conn component)
-        event-server (get-event-mgr component)]
+  [this job-id default-row result-table func-args]
+  (let [db-conn (:db-conn this)
+        event-server (:event-thread this)]
     (log/debug "Using event server" event-server "with db connection" db-conn)
     (actors/notify! event-server
                     {:type :job-track-init
                      :job-id job-id
-                     :db-conn db-conn
                      :default-row default-row
                      :result-table result-table
-                     :result func-args
-                     :service event-server})))
+                     :result func-args})))
+
+;;; Native protocol setup ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(def jobable-behaviour
+  (merge
+    tracker/jobable-default-behaviour
+    {:run-job #'run-job}))
+
+(defrecord NativeTracker [name cfg db-conn event-thread])
+
+(extend NativeTracker tracker/ITrackable tracker/trackable-default-behaviour)
+(extend NativeTracker tracker/IJobable jobable-behaviour)
+
+(defn new-tracker
+  ""
+  [cfg db-conn event-thread]
+  (->NativeTracker :native cfg db-conn event-thread))

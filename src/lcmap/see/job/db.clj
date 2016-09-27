@@ -23,7 +23,7 @@
 ;;; Supporting Functions ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defn get-conn [component]
-  (get-in component [:jobdb :conn]))
+  (get-in component [:job :jobdb :conn]))
 
 ; (defn get-keyspace [conn]
 ;   )
@@ -78,6 +78,8 @@
                     job-table
                     {:status new-status}
                     (query/where [[= :job_id job-id]])))
+
+;; XXX replace match with case
 
 (defn get-job-result [db-conn job-id result-table status-func]
   (match [(first @(result? db-conn result-table job-id))]

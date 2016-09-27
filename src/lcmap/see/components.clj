@@ -56,19 +56,19 @@
               [:cfg
                :logger])
     :jobdb (component/using
-             (db/new-job-client)
-             [:cfg
-              :logger])
+          (db/new-job-client)
+          [:cfg
+           :logger])
     :job (component/using
            (job/new-job-tracker)
            [:cfg
-            :logger])
+            :logger
+            :jobdb])
     :sys (component/using
            (system/new-lcmap-see-toplevel)
            [:cfg
             :logger
             :backend
-            :jobdb
             :job])))
 
 (defn stop [system component-key]

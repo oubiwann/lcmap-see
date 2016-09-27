@@ -7,6 +7,7 @@
             [com.stuartsierra.component :as component]
             [co.paralleluniverse.pulsar.actors :as actors]
             [lcmap.see.job.tracker :as tracker]
+            [lcmap.see.job.tracker.base :as base]
             [lcmap.see.job.tracker.native]))
 
 (defrecord JobTracker []
@@ -14,20 +15,21 @@
 
   (start [component]
     (let [see-cfg (get-in component [:cfg :lcmap.see])
-          backend (:backend see-cfg)
+          db-conn (get-in component [:jobdb :conn])
           event-thread (actors/spawn (actors/gen-event))
-          dispatch-fn (tracker/get-dispatch-fn backend)]
+          backend (:backend see-cfg)
+          constructor-fn (base/get-constructor-fn (:backend see-cfg))]
       (log/infof "Starting LCMAP SEE job tracker (%s) ..." backend)
-      (actors/add-handler! event-thread dispatch-fn)
-      (log/debug "Component keys:" (keys component))
-      (log/debug "Successfully created job tracker thread" event-thread)
-      (assoc component :tracker event-thread)))
+      (let [tracker-impl (constructor-fn see-cfg db-conn event-thread)]
+        (tracker/connect-dispatch! tracker-impl)
+        (log/debug "Component keys:" (keys component))
+        (assoc component :tracker tracker-impl))))
 
   (stop [component]
     (log/info "Stopping LCMAP SEE job tracker ...")
     (log/debug "Component keys" (keys component))
-    (if-let [job-tracker (:tracker component)]
-      (actors/shutdown! (:tracker component)))
+    (if-let [tracker-impl (:tracker component)]
+      (tracker/stop tracker-impl))
     (assoc component :tracker nil)))
 
 (defn new-job-tracker []
