@@ -6,7 +6,6 @@
   (:require [clojure.tools.logging :as log]
             [clj-commons-exec :as exec]
             [lcmap.see.job.tracker :as tracker]
-            [lcmap.see.job.tracker.native]
             [lcmap.see.util :as util])
   (:import [java.io ByteArrayOutputStream]))
 

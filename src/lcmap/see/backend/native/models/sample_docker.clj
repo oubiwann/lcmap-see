@@ -1,13 +1,12 @@
 (ns lcmap.see.backend.native.models.sample-docker
   (:require [clojure.tools.logging :as log]
             [clj-commons-exec :as exec]
-            [lcmap.see.job.tracker :as tracker]
-            [lcmap.see.job.tracker.native]))
+            [lcmap.see.job.tracker :as tracker]))
 
 (defn exec-docker-run [[job-id docker-tag year]]
   (log/debugf "\n\nRunning job %s (executing docker tag %s) ...\n"
-                     job-id
-                     docker-tag)
+              job-id
+              docker-tag)
   (let [cmd ["/usr/bin/sudo" "/usr/bin/docker"
              "run" "-t" docker-tag
              "--year" year]

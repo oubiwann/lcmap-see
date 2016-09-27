@@ -7,7 +7,6 @@
             [clojure.tools.logging :as log]
             [clj-commons-exec :as exec]
             [lcmap.see.job.tracker :as tracker]
-            [lcmap.see.job.tracker.native]
             [lcmap.see.util :as util]))
 
 (defn exec-pipe-run
@@ -61,7 +60,7 @@
         tracker-impl (get-in component [:see :job :tracker])
         func #'exec-pipe-run
         args [job-id spectra x-val y-val start-time end-time
-                     row col in-dir out-dir scene-list verbose]]
+              row col in-dir out-dir scene-list verbose]]
     (log/debugf "run-model has [func args]: [%s %s]" func args)
     (tracker/track-job
       tracker-impl
