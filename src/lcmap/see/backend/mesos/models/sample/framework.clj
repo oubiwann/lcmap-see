@@ -176,10 +176,10 @@
 
 (defn run
   "This is the function that actually runs the framework."
-  [component]
+  [see-backend]
   (log/info "Running LCMAP SEE sample Mesos framework ...")
-  (log/debug "Got component:" component)
-  (let [master (util/get-master component)
+  (log/debug "Got backend:" see-backend)
+  (let [master (util/get-master see-backend)
         ch (chan)
         sched (async-scheduler/scheduler ch)
         driver (scheduler-driver sched
@@ -197,6 +197,6 @@
        :exec-info nil
        :launched-tasks 0
        :limits (assoc limits :max-tasks task-count)
-       :cfg component}
+       :backend see-backend}
       ch)
     (scheduler/join! driver)))
