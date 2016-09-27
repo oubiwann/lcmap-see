@@ -68,4 +68,4 @@
 (defn new-tracker
   ""
   [cfg db-conn event-thread]
-  (->MesosTracker :native cfg db-conn event-thread))
+  (->MesosTracker :mesos cfg db-conn event-thread))

@@ -5,12 +5,16 @@
             [clojurewerkz.cassaforte.cql :as cql]
             [lcmap.client.status-codes :as status]
             [lcmap.see.job.db :as db]
-            [lcmap.see.job.tracker.base :as base]))
+            [lcmap.see.job.tracker.base :as base])
+  (:refer-clojure :exclude [new]))
 
-;;; Utility functions ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;; Support functions ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(defn get-event-mgr [component]
-  (get-in component [:job :tracker]))
+(defn new
+  ""
+  [cfg db-conn event-thread]
+  (let [constructor (base/get-constructor-fn (:backend cfg))]
+    (constructor cfg db-conn event-thread)))
 
 ;;; Protocols and behaviours ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
