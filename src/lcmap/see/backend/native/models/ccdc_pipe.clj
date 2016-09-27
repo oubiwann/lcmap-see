@@ -7,7 +7,6 @@
             [clojure.tools.logging :as log]
             [clj-commons-exec :as exec]
             [lcmap.see.job.tracker :as tracker]
-            [lcmap.see.job.tracker.base :as base]
             [lcmap.see.job.tracker.native]
             [lcmap.see.util :as util]))
 
@@ -59,14 +58,14 @@
    start-time end-time row col in-dir out-dir scene-list verbose]
   ;; Define some vars for pedagogical clarity
   (let [backend (get-in component [:see :backend :name])
-        ;; XXX use new method for simply calling the tracker directly
-        track-job (base/get-tracker-fn backend)
+        tracker-impl (get-in component [:see :job :tracker])
         func #'exec-pipe-run
         args [job-id spectra x-val y-val start-time end-time
                      row col in-dir out-dir scene-list verbose]]
     (log/debugf "run-model has [func args]: [%s %s]" func args)
-    (track-job (get-in component [:see :job :tracker])
-               job-id
-               default-row
-               result-table
-               [func args])))
+    (tracker/track-job
+      tracker-impl
+      job-id
+      default-row
+      result-table
+      [func args])))

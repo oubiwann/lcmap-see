@@ -19,7 +19,9 @@
   function names."
   (stop [this]
     "")
-  (get-tracker [this job-id default-row result-table func-args]
+  (get-tracker [this]
+    "")
+  (track-job [this job-id default-row result-table func-args]
     "")
   (get-event-thread [this]
     "")
@@ -29,9 +31,6 @@
     "")
   (get-conn [this]
     ""))
-
-;; XXX Remove all db-conn reference in implementations, since `this` now provides access to that data
-;;     ... maybe provide a convenience method for it?
 
 (defprotocol IJobable
   "An interface for job trackers which need to perform various duties such
@@ -59,6 +58,7 @@
   ;; XXX maybe in next line use #(-> % ...) instead of (fn ...)?
   {:stop #'base/stop-event-thread
    :get-tracker (fn [this] (base/get-tracker-fn (:name this)))
+   :track-job #'base/track-job
    :get-dispatch (fn [this] (base/get-dispatch-fn (:name this)))
    :connect-dispatch! (fn [this] (base/connect-dispatch! this))
    :get-event-thread (fn [this] (:event-thread this))

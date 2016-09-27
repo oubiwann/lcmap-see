@@ -39,20 +39,6 @@
     :job-track-finish (tracker/finish-job-track this args)
     :done (tracker/done this args)))
 
-;; XXX Move the following into the parent namespace
-
-(defn track-job
-  [this job-id default-row result-table func-args]
-  (let [db-conn (:db-conn this)
-        event-server (:event-thread this)]
-    (log/debug "Using event server" event-server "with db connection" db-conn)
-    (actors/notify! event-server
-                    {:type :job-track-init
-                     :job-id job-id
-                     :default-row default-row
-                     :result-table result-table
-                     :result func-args})))
-
 ;;; Native protocol setup ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (def jobable-behaviour

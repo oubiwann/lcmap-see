@@ -5,7 +5,6 @@
   (:require [clojure.tools.logging :as log]
             [clj-commons-exec :as exec]
             [lcmap.see.job.tracker :as tracker]
-            [lcmap.see.job.tracker.base :as base]
             [lcmap.see.job.tracker.native]))
 
 (defn long-running-func [[job-id sleep-time year]]
@@ -18,15 +17,14 @@
 (defn run-model [component job-id default-row result-table seconds year]
   ;; Define some vars for pedagogical clarity
   (let [backend (get-in component [:see :backend :name])
-        ;; XXX use new method for simply calling the tracker directly
-        track-job (base/get-tracker-fn backend)
+        tracker-impl (get-in component [:see :job :tracker])
         func #'long-running-func
         args [job-id seconds year]]
     (log/trace "Backend: " backend)
-    (log/trace "Tracker function:" track-job)
     (log/trace "Args:" args)
-    (track-job (get-in component [:see :job :tracker])
-               job-id
-               default-row
-               result-table
-               [func args])))
+    (tracker/track-job
+      tracker-impl
+      job-id
+      default-row
+      result-table
+      [func args])))
