@@ -38,6 +38,8 @@
   running a job, if the job has already been run."
   (result-exists? [this result-table job-id]
     "")
+  (send-msg [this args]
+    "")
   (init-job-track [this args]
     "")
   (return-existing-result [this args]
@@ -67,6 +69,7 @@
 (def jobable-default-behaviour
   "Default implementations for IJobable."
   {:result-exists? #'base/result-exists?
+   :send-msg #'base/send-msg
    :init-job-track #'base/init-job-track
    :return-existing-result #'base/return-existing-result
    :run-job #'base/run-job

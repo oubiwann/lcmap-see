@@ -5,7 +5,8 @@
             [co.paralleluniverse.pulsar.actors :as actors]
             [lcmap.client.status-codes :as status]
             [lcmap.see.job.db :as db]
-            [lcmap.see.job.tracker :as tracker])
+            [lcmap.see.job.tracker :as tracker]
+            [lcmap.see.job.tracker.base :as base])
   (:refer-clojure :exclude [promise await bean])
   (:import [co.paralleluniverse.common.util Debug]
            [co.paralleluniverse.actors LocalActor]
@@ -35,9 +36,8 @@
   ;;     functions) will need to be updated (replacing :run-job with the two new
   ;;     transitions ...)
   (log/debug "Finished job.")
-  (actors/notify! (:event-thread this)
-                  (into args {:type :job-save-data
-                              :result job-data}))))
+  (base/send-msg this (into args {:type :job-save-data
+                                  :result job-data}))))
 
 (defsfn dispatch-handler
   [this {type :type :as args}]
