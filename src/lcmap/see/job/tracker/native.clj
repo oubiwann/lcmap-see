@@ -3,7 +3,6 @@
   (:require [clojure.tools.logging :as log]
             [co.paralleluniverse.pulsar.core :refer [defsfn]]
             [co.paralleluniverse.pulsar.actors :as actors]
-            [clojurewerkz.cassaforte.query :as query]
             [lcmap.client.status-codes :as status]
             [lcmap.see.job.db :as db]
             [lcmap.see.job.tracker :as tracker])
@@ -26,8 +25,6 @@
     (actors/notify! (:event-thread this)
                     (into args {:type :job-save-data
                                 :result job-data}))))
-
-;; XXX Merge the following as a behaviour override
 
 (defsfn dispatch-handler
   [this {type :type :as args}]
