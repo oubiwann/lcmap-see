@@ -13,7 +13,9 @@
 (defn new
   ""
   [cfg db-conn event-thread]
-  (let [constructor (base/get-constructor-fn (:backend cfg))]
+  (let [backend (:backend cfg)
+        constructor (base/get-constructor-fn (:backend cfg))]
+    (log/debug "Got constructor:" constructor)
     (constructor cfg db-conn event-thread)))
 
 ;;; Protocols and behaviours ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;

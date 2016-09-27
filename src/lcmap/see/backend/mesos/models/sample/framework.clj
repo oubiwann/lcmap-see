@@ -178,6 +178,7 @@
   "This is the function that actually runs the framework."
   [component]
   (log/info "Running LCMAP SEE sample Mesos framework ...")
+  (log/debug "Got component:" component)
   (let [master (util/get-master component)
         ch (chan)
         sched (async-scheduler/scheduler ch)

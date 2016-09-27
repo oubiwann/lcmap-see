@@ -31,7 +31,7 @@
   [this {job-id :job-id job-result :result :as args}]
   @(db/update-status (:db-conn this) job-id status/pending-link)
   (log/debug "Finished job.")
-  (base/send-msg this (into args {:type :job-save-data}))))
+  (base/send-msg this (into args {:type :job-save-data})))
 
 (defsfn dispatch-handler
   [this {type :type :as args}]

@@ -8,6 +8,7 @@
             [co.paralleluniverse.pulsar.actors :as actors]
             [lcmap.see.job.tracker :as tracker]
             [lcmap.see.job.tracker.base :as base]
+            [lcmap.see.job.tracker.mesos]
             [lcmap.see.job.tracker.native]))
 
 (defrecord JobTracker []
