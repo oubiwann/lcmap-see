@@ -72,7 +72,8 @@
    :send-msg #'base/send-msg
    :init-job-track #'base/init-job-track
    :return-existing-result #'base/return-existing-result
-   :run-job #'base/run-job
+   :start-job-run #'base/start-job-run
+   :finish-job-run #'base/finish-job-run
    :save-job-data #'base/save-job-data
    :finish-job-track #'base/finish-job-track
    :done #'base/done})

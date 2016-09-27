@@ -105,14 +105,18 @@
       (send-msg this (into args {:type :job-result-exists}))
       (do
         @(db/insert-default db-conn job-id default-row)
-        (send-msg this (into args {:type :job-run}))))))
+        (send-msg this (into args {:type :job-start-run}))))))
 
 (defsfn return-existing-result
   [this args]
   (log/debug "Returning ID for existing job results ...")
   (send-msg this (into args {:type :done})))
 
-(defn run-job
+(defn start-job-run
+  [this args]
+  {:error "You need to override this function."})
+
+(defn finish-job-run
   [this args]
   {:error "You need to override this function."})
 

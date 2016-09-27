@@ -14,7 +14,7 @@
 
 ;;; Implementation overrides for native tracker ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(defsfn run-job
+(defsfn start-job-run
   [this {job-id :job-id [job-func job-args] :result :as args}]
   (log/debugf "Running the job with function %s and args %s ..."
               job-func
@@ -25,7 +25,10 @@
   ;;     implementation ... in which case *it* can notify the :event-thread
   ;;     of results available to save ...
   (job-func job-args)
-  (log/debugf "Kicked off Mesos framework.")
+  (log/debugf "Kicked off Mesos framework."))
+
+(defsfn finish-job-run
+  [this {job-id :job-id job-result :result :as args}]
   @(db/update-status (:db-conn this) job-id status/pending-link)
 
   ;; XXX Maybe split this into two functions?
@@ -36,15 +39,15 @@
   ;;     functions) will need to be updated (replacing :run-job with the two new
   ;;     transitions ...)
   (log/debug "Finished job.")
-  (base/send-msg this (into args {:type :job-save-data
-                                  :result job-data}))))
+  (base/send-msg this (into args {:type :job-save-data}))))
 
 (defsfn dispatch-handler
   [this {type :type :as args}]
   (case type
     :job-track-init (tracker/init-job-track this args)
     :job-result-exists (tracker/return-existing-result this args)
-    :job-run (run-job this args)
+    :job-start-run (start-job-run this args)
+    :job-finish-run (finish-job-run this args)
     :job-save-data (tracker/save-job-data this args)
     :job-track-finish (tracker/finish-job-track this args)
     :done (tracker/done this args)))
@@ -54,7 +57,8 @@
 (def jobable-behaviour
   (merge
     tracker/jobable-default-behaviour
-    {:run-job #'run-job}))
+    {:start-job-run #'start-job-run
+     :finish-job-run #'finish-job-run}))
 
 (defrecord MesosTracker [name cfg db-conn event-thread])
 

@@ -14,24 +14,30 @@
 
 ;;; Implementation overrides for native tracker ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(defsfn run-job
+(defsfn start-job-run
   [this {job-id :job-id [job-func job-args] :result :as args}]
   (log/debugf "Running the job with function %s and args %s ..."
               job-func
               job-args)
   (let [job-data (job-func job-args)]
-    (log/debugf "Got result of type %s with value %s" (type job-data) job-data)
+    (log/debugf "Kicked off native job.")
+    (base/send-msg this (into args {:type :job-finish-run
+                                    :result job-data}))))
+
+(defsfn finish-job-run
+  [this {job-id :job-id job-result :result :as args}]
+    (log/debugf "Got result of type %s with value %s" (type job-result) job-result)
     @(db/update-status (:db-conn this) job-id status/pending-link)
     (log/debug "Finished job.")
-    (base/send-msg this (into args {:type :job-save-data
-                                    :result job-data}))))
+    (base/send-msg this (into args {:type :job-save-data})))
 
 (defsfn dispatch-handler
   [this {type :type :as args}]
   (case type
     :job-track-init (tracker/init-job-track this args)
     :job-result-exists (tracker/return-existing-result this args)
-    :job-run (run-job this args)
+    :job-start-run (start-job-run this args)
+    :job-finish-run (finish-job-run this args)
     :job-save-data (tracker/save-job-data this args)
     :job-track-finish (tracker/finish-job-track this args)
     :done (tracker/done this args)))
@@ -41,7 +47,8 @@
 (def jobable-behaviour
   (merge
     tracker/jobable-default-behaviour
-    {:run-job #'run-job}))
+    {:start-job-run #'start-job-run
+     :finish-job-run #'finish-job-run}))
 
 (defrecord NativeTracker [name cfg db-conn event-thread])
 
