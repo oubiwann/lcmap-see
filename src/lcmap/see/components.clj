@@ -51,10 +51,6 @@
     :logger (component/using
               (logger/new-logger)
               [:cfg])
-    :backend (component/using
-              (backend/new-backend)
-              [:cfg
-               :logger])
     :jobdb (component/using
           (db/new-job-client)
           [:cfg
@@ -64,6 +60,11 @@
            [:cfg
             :logger
             :jobdb])
+    :backend (component/using
+              (backend/new-backend)
+              [:cfg
+               :logger
+               :job])
     :sys (component/using
            (system/new-lcmap-see-toplevel)
            [:cfg
