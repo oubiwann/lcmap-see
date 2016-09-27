@@ -14,13 +14,13 @@
   (:out @(exec/sh ["cal" year])))
 
 (defn run-model [component job-id default-row result-table seconds year]
-  ;; Define some vars for pedagogical clarity
+  ;; Define some vars for clarity
   (let [backend (get-in component [:see :backend :name])
         tracker-impl (get-in component [:see :job :tracker])
         func #'long-running-func
         args [job-id seconds year]]
     (log/trace "Backend: " backend)
-    (log/trace "Args:" args)
+    (log/trace "Passing model args to tracker:" args)
     (tracker/track-job
       tracker-impl
       job-id
