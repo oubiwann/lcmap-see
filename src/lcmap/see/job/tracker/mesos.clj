@@ -24,13 +24,13 @@
   ;;     handler fires ... so the handler might need a reference to the protocol
   ;;     implementation ... in which case *it* can notify the :event-thread
   ;;     of results available to save ...
-  (job-func job-args)
+  (apply job-func job-args)
   (log/debugf "Kicked off Mesos framework."))
 
 (defsfn finish-job-run
   [this {job-id :job-id job-result :result :as args}]
   @(db/update-status (:db-conn this) job-id status/pending-link)
-  (log/debug "Finished job.")
+  (log/debug "Finished job with results: " job-result)
   (base/send-msg this (into args {:type :job-save-data})))
 
 (defsfn dispatch-handler
