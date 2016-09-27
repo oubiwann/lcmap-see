@@ -20,8 +20,6 @@
 ;;; attempt to keep things clear and clean for the learning experience. Do
 ;;; not emulate in production code!
 
-(def lein "/usr/local/bin/lein")
-
 (defn info-map
   ""
   []
@@ -30,15 +28,11 @@
 
 (defn cmd-info-map
   ""
-  [master-info framework-id cwd]
+  [master-info framework-id]
   (into
     (info-map)
     {:framework-id {:value framework-id}
-     :command {:value (format "cd %s && %s mesomatic %s:%s executor"
-                              cwd
-                              lein
-                              (:hostname master-info)
-                              (:port master-info))
+     :command {:value (format "")
                :shell true}}))
 
 (defn get-executor-id
@@ -201,7 +195,7 @@
 (defn run
   ""
   [master]
-  (log/infof "Running sample executor from %s ..." (util/cwd))
+  (log/infof "Running sample executor ...")
   (let [ch (chan)
         exec (async-executor/executor ch)
         driver (executor-driver exec)]
