@@ -30,14 +30,6 @@
 (defsfn finish-job-run
   [this {job-id :job-id job-result :result :as args}]
   @(db/update-status (:db-conn this) job-id status/pending-link)
-
-  ;; XXX Maybe split this into two functions?
-  ;;     - #'start-run-job (and state transition :job-start-run)
-  ;;     - #'finish-run-job (and state transition :job-finish-run)
-  ;;     This would allow us to more easily handle process other async execution
-  ;;     frameworks for results. It will mean that the transitions (and related
-  ;;     functions) will need to be updated (replacing :run-job with the two new
-  ;;     transitions ...)
   (log/debug "Finished job.")
   (base/send-msg this (into args {:type :job-save-data}))))
 

@@ -57,11 +57,8 @@
   (done [this args]
     ""))
 
-;; XXX Don't use the protocol functions to get a function and then call it, just call it
-
 (def trackable-default-behaviour
   "Default implementations for ITrackable."
-  ;; XXX maybe in next line use #(-> % ...) instead of (fn ...)?
   {:stop #'base/stop-event-thread
    :get-tracker (fn [this] (base/get-tracker-fn (:name this)))
    :track-job #'base/track-job
