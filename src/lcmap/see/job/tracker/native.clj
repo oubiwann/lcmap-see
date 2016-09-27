@@ -40,7 +40,7 @@
     :job-finish-run (finish-job-run this args)
     :job-save-data (tracker/save-job-data this args)
     :job-track-finish (tracker/finish-job-track this args)
-    :done (tracker/done this args)))
+    :job-done (tracker/done this args)))
 
 ;;; Native protocol setup ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 

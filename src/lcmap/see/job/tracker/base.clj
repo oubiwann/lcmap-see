@@ -110,7 +110,7 @@
 (defsfn return-existing-result
   [this args]
   (log/debug "Returning ID for existing job results ...")
-  (send-msg this (into args {:type :done})))
+  (send-msg this (into args {:type :job-done})))
 
 (defn start-job-run
   [this args]
@@ -136,7 +136,7 @@
   [this {job-id :job-id result :result :as args}]
   @(db/update-status (:db-conn this) job-id status/permanant-link)
   (log/debug "Updated job traking data with" result)
-  (send-msg this (into args {:type :done})))
+  (send-msg this (into args {:type :job-done})))
 
 (defsfn done
   [this {job-id :job-id :as args}]
