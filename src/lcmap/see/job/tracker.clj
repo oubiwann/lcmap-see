@@ -42,6 +42,8 @@
   "An interface for job trackers which need to perform various duties such
   as running job functions, storing results, and returning results without
   running a job, if the job has already been run."
+  (gen-hash [this func args]
+    "")
   (result-exists? [this result-table job-id]
     "")
   (send-msg [this args]
@@ -71,7 +73,8 @@
 
 (def jobable-default-behaviour
   "Default implementations for IJobable."
-  {:result-exists? #'base/result-exists?
+  {:gen-hash #'base/gen-hash
+   :result-exists? #'base/result-exists?
    :send-msg #'base/send-msg
    :init-job-track #'base/init-job-track
    :return-existing-result #'base/return-existing-result

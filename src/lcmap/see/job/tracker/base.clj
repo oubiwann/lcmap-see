@@ -3,8 +3,10 @@
             [co.paralleluniverse.pulsar.core :refer [defsfn]]
             [co.paralleluniverse.pulsar.actors :as actors]
             [clojurewerkz.cassaforte.cql :as cql]
+            [digest]
             [lcmap.client.status-codes :as status]
-            [lcmap.see.job.db :as db])
+            [lcmap.see.job.db :as db]
+            [lcmap.see.util :as util])
   (:import [clojure.lang Keyword]))
 
 (declare send-msg)
@@ -81,6 +83,14 @@
                     :result func-args})))
 
 ;;; Job behaviour function implementations ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(defn gen-hash
+  ""
+  [this func args]
+  (->> args
+       (util/serialize)
+       (str func)
+       (digest/md5)))
 
 (defsfn result-exists?
   [this result-table job-id]
