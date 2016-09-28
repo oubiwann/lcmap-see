@@ -1,44 +1,14 @@
 (ns lcmap.see.backend
-  (:import [clojure.lang Keyword]))
+  (:require [clojure.tools.logging :as log]
+            [lcmap.see.backend.base :as base])
+  (:refer-clojure :exclude [new]))
 
-(def backend-ns "lcmap.see.backend.")
-(def models-infix ".models.")
-(def init-function "new-backend")
-(def run-function "run-model")
-
-(defn get-constructor-ns
-  "This utility function defines the standard namespace for SEE backend
-  constructors. The namespace is assembled from constants and two passed
-  arguments."
-  [^Keyword backend]
-  (str backend-ns (name backend)))
-
-(defn get-model-ns
-  "This utility function defines the standard namespace for SEE science models.
-  The namespace is assembled from constants and two passed arguments."
-  [^Keyword backend ^String model-name]
-  (str backend-ns (name backend) models-infix model-name))
-
-(defn get-constructor-fn
-  "This utility function uses the get-constructor-ns function to define
-  the standard for full namespace + function name for SEE constructor
-  functions."
-  [^Keyword backend]
-  (->> init-function
-       (str "/")
-       (str (get-constructor-ns backend))
-       (symbol)
-       (resolve)))
-
-(defn get-model-fn
-  "This utility function uses the get-model-ns function to define the standard
-  for full namespace + function name for SEE science models."
-  [^Keyword backend ^String model-name]
-  (->> run-function
-       (str "/")
-       (str (get-model-ns backend model-name))
-       (symbol)
-       (resolve)))
+(defn new
+  ""
+  [cfg]
+  (let [constructor (base/get-constructor-fn (:backend cfg))]
+    (log/debug "Got constructor:" constructor)
+    (constructor cfg)))
 
 (defprotocol IComponentable
   "An interface for backends which need to be stopped and started as part of a
@@ -53,14 +23,18 @@
   information."
   (get-model [this model-name]
     "Given the namespace and the function name (as strings), return a reference
-    to the function that can be called to run a given model."))
+    to the function that can be called to run a given model.")
+  (run-model [this model-name args]
+    "Given the namespace and the function name (as strings), call the
+    backend's `run-model` for this given model."))
 
 (def componentable-default-behaviour
   "Default implementations for IComponentable."
-  {:set-up (fn [this] this)
-   :tear-down (fn [this] this)})
+  {:set-up #'base/set-up
+   :tear-down #'base/tear-down})
 
 (def modelable-default-behaviour
   "Default implementations for IModelable."
-  {:get-model (fn [this model-name] (get-model-fn (:name this) model-name))})
+  {:get-model #'base/get-model
+   :run-model #'base/run-model})
 
