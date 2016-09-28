@@ -90,6 +90,9 @@
   (->> args
        (util/serialize)
        (str func)
+       (symbol)
+       (resolve)
+       (str)
        (digest/md5)))
 
 (defsfn result-exists?
