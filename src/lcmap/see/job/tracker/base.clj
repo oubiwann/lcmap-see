@@ -58,7 +58,7 @@
        (symbol)
        (resolve)))
 
-(defn connect-dispatch!
+(defsfn connect-dispatch!
   ""
   [this]
   (actors/add-handler!
@@ -66,7 +66,7 @@
     (partial (get-dispatch-fn (:name this)) this))
   this)
 
-(defn track-job
+(defsfn track-job
   [this model-func model-args]
   (let [db-conn (:db-conn this)
         job-id (gen-hash this model-func model-args)
@@ -81,7 +81,7 @@
 
 ;;; Job behaviour function implementations ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(defn gen-hash
+(defsfn gen-hash
   ""
   [this func args]
   (log/debug "Preparing to hash [func args]: [%s %s]" func args)
@@ -90,10 +90,9 @@
       (vector)
       (into args)
       (str)
-      (digest/md5)
-      ))
+      (digest/md5)))
 
-(defn result-exists?
+(defsfn result-exists?
   [this job-id]
   (let [db-conn (:db-conn this)
         results-table (get-in this [:cfg :lcmap.see :results-table])]
@@ -103,12 +102,12 @@
       nil false
       true)))
 
-(defn send-msg
+(defsfn send-msg
   ""
   [this args]
   (actors/notify! (:event-thread this) args))
 
-(defn init-job-track
+(defsfn init-job-track
   [this {default-row :default-row
    func-args :result :as args}]
   (log/debug "Starting job tracking ...")
@@ -120,20 +119,20 @@
         @(db/insert-default db-conn job-id default-row)
         (send-msg this (into args {:type :job-start-run}))))))
 
-(defn return-existing-result
+(defsfn return-existing-result
   [this args]
   (log/debug "Returning ID for existing job results ...")
   (send-msg this (into args {:type :job-done})))
 
-(defn start-job-run
+(defsfn start-job-run
   [this args]
   {:error "You need to override this function."})
 
-(defn finish-job-run
+(defsfn finish-job-run
   [this args]
   {:error "You need to override this function."})
 
-(defn save-job-data
+(defsfn save-job-data
   [this {job-id :job-id job-output :result :as args}]
   (let [db-conn (:db-conn this)
         results-table (get-in this [:cfg :lcmap.see :results-table])]
@@ -146,12 +145,12 @@
     (log/debug "Saved.")
     (send-msg this (into args {:type :job-track-finish}))))
 
-(defn finish-job-track
+(defsfn finish-job-track
   [this {job-id :job-id result :result :as args}]
   @(db/update-status (:db-conn this) job-id status/permanant-link)
   (log/debug "Updated job traking data with" result)
   (send-msg this (into args {:type :job-done})))
 
-(defn done
+(defsfn done
   [this {job-id :job-id :as args}]
   (log/debugf "Finished tracking for job %s." job-id))
