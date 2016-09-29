@@ -5,15 +5,10 @@
             [lcmap.see.backend :as see]
             [lcmap.see.util :as util]))
 
-;;; >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-;;; LCMAP SEE backend implementation for Mesos
-;;; >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-;;;
-;;; The following record is designed to be used with the interfaces (protocols)
-;;; defined for generilzed SEE backends. The record should support data needed
-;;; by the backend implementations in order to perform the duties of a
-;;; component, a science model, and any other defined protocols.
-
+;; The following record is designed to be used with the interfaces (protocols)
+;; defined for generilzed SEE backends. The record should support data needed
+;; by the backend implementations in order to perform the duties of a
+;; component, a science model, and any other defined protocols.
 (defrecord MesosBackend [name cfg db-conn event-thread])
 
 (extend MesosBackend see/IComponentable see/componentable-default-behaviour)

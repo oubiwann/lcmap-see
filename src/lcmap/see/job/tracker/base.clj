@@ -2,11 +2,10 @@
   (:require [clojure.tools.logging :as log]
             [co.paralleluniverse.pulsar.core :refer [defsfn]]
             [co.paralleluniverse.pulsar.actors :as actors]
-            [clojurewerkz.cassaforte.cql :as cql]
+            [clojusc.twig :refer [pprint]]
             [digest]
             [lcmap.client.status-codes :as status]
-            [lcmap.see.job.db :as db]
-            [lcmap.see.util :as util])
+            [lcmap.see.job.db :as db])
   (:import [clojure.lang Keyword]))
 
 (declare send-msg gen-hash)
@@ -61,17 +60,23 @@
 (defsfn connect-dispatch!
   ""
   [this]
-  (actors/add-handler!
-    (:event-thread this)
-    (partial (get-dispatch-fn (:name this)) this))
-  this)
+  (let [event-thread (:event-thread this)
+        backend (get-in this [:cfg :backend])
+        dispatch-fn (get-dispatch-fn backend)
+        dispatcher (partial dispatch-fn this)]
+    (log/debugf "Adding handler '%s' to event-thread (%s) ..."
+                dispatch-fn event-thread)
+    (actors/add-handler! event-thread dispatcher)
+    this))
 
 (defsfn track-job
   [this model-func model-args]
+  (log/debug "Preparing to track job ...")
   (let [db-conn (:db-conn this)
         job-id (gen-hash this model-func model-args)
-        default-row (util/make-default-row (:cfg this) job-id (:name this))]
-    (log/debug "Using event server" (:event-thread this) "with db connection"
+        default-row (db/make-default-row (:cfg this) job-id (:name this))]
+    (log/trace "Generated default-row:" (pprint default-row))
+    (log/trace "Using event server" (:event-thread this) "with db connection"
                db-conn)
     (send-msg this {:type :job-track-init
                     :job-id job-id
@@ -84,7 +89,7 @@
 (defsfn gen-hash
   ""
   [this func args]
-  (log/debug "Preparing to hash [func args]: [%s %s]" func args)
+  (log/tracef "Preparing to hash [func args]: [%s %s]" func args)
   (-> func
       (str)
       (vector)
@@ -94,10 +99,12 @@
 
 (defsfn result-exists?
   [this job-id]
+  (log/debug "Preparing to check for presence of results ...")
   (let [db-conn (:db-conn this)
-        results-table (get-in this [:cfg :lcmap.see :results-table])]
-    (log/debug "Got args:" db-conn results-table job-id)
-    (case (first @(db/result? db-conn results-table job-id))
+        results-keyspace (get-in this [:cfg :results-keyspace])
+        results-table (get-in this [:cfg :results-table])]
+    (log/trace "Got args:" db-conn results-table job-id)
+    (case (first @(db/result? db-conn results-keyspace results-table job-id))
       [] false
       nil false
       true)))
@@ -105,14 +112,15 @@
 (defsfn send-msg
   ""
   [this args]
-  (actors/notify! (:event-thread this) args))
+  (let [event-thread (:event-thread this)]
+    (log/debug "Sending message to event-thread:" event-thread)
+    (log/trace "Message:" (pprint args))
+    (actors/notify! event-thread args)))
 
 (defsfn init-job-track
-  [this {default-row :default-row
-   func-args :result :as args}]
+  [this {job-id :job-id default-row :default-row func-args :result :as args}]
   (log/debug "Starting job tracking ...")
-  (let [job-id (gen-hash this )
-        db-conn (:db-conn this)]
+  (let [db-conn (:db-conn this)]
     (if (result-exists? this job-id)
       (send-msg this (into args {:type :job-result-exists}))
       (do
@@ -135,20 +143,21 @@
 (defsfn save-job-data
   [this {job-id :job-id job-output :result :as args}]
   (let [db-conn (:db-conn this)
-        results-table (get-in this [:cfg :lcmap.see :results-table])]
-    (log/debugf "Saving job data \n%s with id %s ..."
+        results-keyspace (get-in this [:cfg :results-keyspace])
+        results-table (get-in this [:cfg :results-table])]
+    (log/tracef "Saving job data \n%s with id %s ..."
                        job-output
                        job-id
                        results-table)
-    @(cql/insert-async
-       db-conn results-table {:result_id job-id :result job-output})
+    @(db/save-job-result
+      db-conn results-keyspace results-table job-id job-output)
     (log/debug "Saved.")
     (send-msg this (into args {:type :job-track-finish}))))
 
 (defsfn finish-job-track
   [this {job-id :job-id result :result :as args}]
   @(db/update-status (:db-conn this) job-id status/permanant-link)
-  (log/debug "Updated job traking data with" result)
+  (log/trace "Updated job traking data with" result)
   (send-msg this (into args {:type :job-done})))
 
 (defsfn done

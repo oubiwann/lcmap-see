@@ -5,6 +5,7 @@
             [clojurewerkz.cassaforte.client :as cc]
             [clojurewerkz.cassaforte.cql :as cql]
             [clojurewerkz.cassaforte.query :as query]
+            [lcmap.client.status-codes :as status]
             [lcmap.config.helpers :refer [init-cfg]]
             [lcmap.see.config :as see-cfg]
             [lcmap.see.util :as util]))
@@ -27,6 +28,22 @@
 (defn get-conn [component]
   (get-in component [:job :jobdb :conn]))
 
+(defn make-default-row
+  ""
+  ([cfg id model-name]
+    (make-default-row
+      cfg id (:results-keyspace cfg) (:results-table cfg) model-name
+      status/pending))
+  ([cfg id keyspace table model-name]
+    (make-default-row
+      cfg id keyspace table model-name status/pending))
+  ([cfg id keyspace table model-name default-status]
+    {:science_model_name model-name
+     :result_keyspace keyspace
+     :result_table table
+     :result_id id
+     :status default-status}))
+
 (defn get-results-table [conn job-id]
   (cql/use-keyspace conn job-keyspace)
   (-> conn
@@ -41,8 +58,6 @@
 ;;; API Functions ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defn job? [conn job-id]
-  ;(log/debug "Connection keys:" (keys conn))
-  ;(log/debug "Connection cfg keys:" (keys (:cfg conn)))
   (cql/use-keyspace conn job-keyspace)
   (cql/select-async
     conn
@@ -50,10 +65,10 @@
     (query/where [[= :job_id job-id]])
     (query/limit 1)))
 
-(defn result? [conn result-table result-id]
+(defn result? [conn result-keyspace result-table result-id]
   (log/debugf "Checking for result of id %s in table '%s' ..."
               result-id result-table)
-  (cql/use-keyspace conn job-keyspace)
+  (cql/use-keyspace conn result-keyspace)
   (cql/select-async
     conn
     result-table
@@ -75,13 +90,17 @@
                     {:status new-status}
                     (query/where [[= :job_id job-id]])))
 
-;; XXX replace match with case
+(defn save-job-result [conn result-keyspace result-table job-id job-output]
+  (cql/use-keyspace conn result-keyspace)
+  (cql/insert-async
+    conn result-table {:result_id job-id :result job-output}))
 
-(defn get-job-result [db-conn job-id result-table status-func]
-  (match [(first @(result? db-conn result-table job-id))]
-    [[]]
-      (status-func db-conn job-id)
-    [nil]
-      (status-func db-conn job-id)
-    [result]
-      (status-func result)))
+(defn get-job-result [conn result-keyspace result-table job-id status-func]
+  (cql/use-keyspace conn result-keyspace)
+  (let [result (first @(result? conn result-keyspace result-table job-id))]
+    (case result
+      []
+        (status-func conn job-id)
+      nil
+        (status-func conn job-id)
+      (status-func result))))

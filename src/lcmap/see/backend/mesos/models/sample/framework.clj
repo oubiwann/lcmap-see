@@ -175,7 +175,7 @@
 
 (defn run
   "This is the function that actually runs the framework."
-  [backend-impl tracker-impl model-args]
+  [backend-impl tracker-impl sleep-time year]
   (log/info "Running LCMAP SEE sample Mesos framework ...")
   (log/debug "Got backend:" backend-impl)
   (let [ch (chan)
@@ -184,7 +184,8 @@
                                  framework-info-map
                                  (util/get-master backend-impl)
                                  nil
-                                 false)]
+                                 false)
+        model-args [sleep-time year]]
     (log/debug "Starting sample scheduler ...")
     (scheduler/start! driver)
     (log/debug "Reducing over sample scheduler channel messages ...")

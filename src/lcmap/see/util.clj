@@ -7,22 +7,6 @@
             [lcmap.client.status-codes :as status]
             [leiningen.core.main :as lein]))
 
-(defn make-default-row
-  ""
-  ([cfg id model-name]
-    (make-default-row
-      cfg id (:results-keyspace cfg) (:results-table cfg) model-name
-      status/pending))
-  ([cfg id keyspace table model-name]
-    (make-default-row
-      cfg id keyspace table model-name status/pending))
-  ([cfg id keyspace table model-name default-status]
-    {:science_model_name model-name
-     :result_keyspace keyspace
-     :result_table table
-     :result_id id
-     :status default-status}))
-
 (defn finish
   ""
   [& {:keys [exit-code]}]
