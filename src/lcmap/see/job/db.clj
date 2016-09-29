@@ -19,17 +19,13 @@
 (def cfg ((init-cfg see-cfg/defaults) :lcmap.see))
 (def job-keyspace (:job-keyspace cfg))
 (def job-table (:job-table cfg))
+(def results-keyspace (:results-keyspace cfg))
+(def results-table (:results-table cfg))
 
 ;;; Supporting Functions ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defn get-conn [component]
   (get-in component [:job :jobdb :conn]))
-
-; (defn get-keyspace [conn]
-;   )
-
-; (defn get-job-table [conn]
-;   )
 
 (defn get-results-table [conn job-id]
   (cql/use-keyspace conn job-keyspace)

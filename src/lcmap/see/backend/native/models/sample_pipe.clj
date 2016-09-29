@@ -41,18 +41,18 @@
   * ``cat /etc/hosts`` (with the optional ``--number`` flag)
   * ``uniq`` (with the optional ``--count`` flag)
   * ``wc`` (with the optional ``--bytes``, ``--words``, or ``--lines`` flags)"
-  [component job-id default-row result-table line-number unique-count bytes
-   words lines]
+  [backend-impl model-name line-number unique-count bytes words lines]
   ;; Define some vars for pedagogical clarity
-  (let [backend (get-in component [:see :backend :name])
-        tracker-impl (get-in component [:see :job :tracker])
-        track-job (base/get-tracker-fn backend)
-        func #'exec-pipe-run
-        args [job-id line-number unique-count bytes words lines]]
-    (log/debugf "run-model has [func args]: [%s %s]" func args)
+  (let [cfg (:cfg backend-impl)
+        tracker-impl (tracker/new
+                       model-name
+                       (:cfg backend-impl)
+                       (:db-conn backend-impl)
+                       (:event-thread backend-impl))
+        model-func #'exec-pipe-run
+        model-args [job-id line-number unique-count bytes words lines]]
+    (log/debugf "run-model has [func args]: [%s %s]" model-func model-args)
     (tracker/track-job
       tracker-impl
-      job-id
-      default-row
-      result-table
-      [func args])))
+      model-func
+      model-args)))

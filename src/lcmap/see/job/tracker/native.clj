@@ -14,7 +14,7 @@
 
 ;;; Implementation overrides for native tracker ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(defsfn start-job-run
+(defn start-job-run
   [this {job-id :job-id [job-func job-args] :result :as args}]
   (log/debugf "Running the job with function %s and args %s ..."
               job-func
@@ -24,14 +24,14 @@
     (base/send-msg this (into args {:type :job-finish-run
                                     :result job-data}))))
 
-(defsfn finish-job-run
+(defn finish-job-run
   [this {job-id :job-id job-result :result :as args}]
     (log/debugf "Got result of type %s with value %s" (type job-result) job-result)
     @(db/update-status (:db-conn this) job-id status/pending-link)
     (log/debug "Finished job.")
     (base/send-msg this (into args {:type :job-save-data})))
 
-(defsfn dispatch-handler
+(defn dispatch-handler
   [this {type :type :as args}]
   (case type
     :job-track-init (tracker/init-job-track this args)
@@ -57,5 +57,5 @@
 
 (defn new-tracker
   ""
-  [cfg db-conn event-thread]
-  (->NativeTracker :native cfg db-conn event-thread))
+  [name cfg db-conn event-thread]
+  (->NativeTracker name cfg db-conn event-thread))

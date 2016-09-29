@@ -11,7 +11,7 @@
   ""
   ([cfg id model-name]
     (make-default-row
-      cfg id (:results-keyspace cfg) (:results-table) model-name
+      cfg id (:results-keyspace cfg) (:results-table cfg) model-name
       status/pending))
   ([cfg id keyspace table model-name]
     (make-default-row

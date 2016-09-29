@@ -12,22 +12,21 @@
 
 (defn new
   ""
-  [cfg db-conn event-thread]
-  (let [backend (:backend cfg)
-        constructor (base/get-constructor-fn (:backend cfg))]
+  [name cfg db-conn _]
+  (let [constructor (base/get-constructor-fn (:backend cfg))
+        event-thread (actors/spawn (actors/gen-event))]
     (log/debug "Got constructor:" constructor)
-    (constructor cfg db-conn event-thread)))
+    (-> (constructor name cfg db-conn event-thread)
+        (base/connect-dispatch!))))
 
 ;;; Protocols and behaviours ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defprotocol ITrackable
   "An interface for job trackers which need to perform lookups of metadata
   function names."
-  (stop [this]
-    "")
   (get-tracker [this]
     "")
-  (track-job [this job-id default-row result-table func-args]
+  (track-job [this model-func model-args]
     "")
   (get-event-thread [this]
     "")
@@ -63,8 +62,7 @@
 
 (def trackable-default-behaviour
   "Default implementations for ITrackable."
-  {:stop #'base/stop-event-thread
-   :get-tracker (fn [this] (base/get-tracker-fn (:name this)))
+  {:get-tracker (fn [this] (base/get-tracker-fn (:name this)))
    :track-job #'base/track-job
    :get-dispatch (fn [this] (base/get-dispatch-fn (:name this)))
    :connect-dispatch! (fn [this] (base/connect-dispatch! this))

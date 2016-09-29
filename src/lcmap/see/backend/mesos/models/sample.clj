@@ -7,16 +7,17 @@
             [lcmap.see.job.tracker :as tracker]
             [lcmap.see.job.tracker.mesos]))
 
-(defn run-model [component job-id default-row result-table seconds year]
-  ;; Define some vars for clarity
-  (let [see-backend (get-in component [:see :backend])
-        tracker-impl (get-in component [:see :job :tracker])
-        func #'framework/run
-        args [see-backend tracker-impl [job-id seconds year]]]
+(defn run-model [backend-impl model-name seconds year]
+  (let [cfg (:cfg backend-impl)
+        tracker-impl (tracker/new
+                       model-name
+                       (:cfg backend-impl)
+                       (:db-conn backend-impl)
+                       (:event-thread backend-impl))
+        model-func #'framework/run
+        model-args [backend-impl tracker-impl seconds year]]
     (log/debug "Preparing to run model ...")
     (tracker/track-job
       tracker-impl
-      job-id
-      default-row
-      result-table
-      [func args])))
+      model-func
+      model-args)))

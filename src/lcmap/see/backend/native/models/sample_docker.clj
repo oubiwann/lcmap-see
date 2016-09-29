@@ -16,19 +16,19 @@
       1 (:err result)
       [:error "unexpected output" result])))
 
-(defn run-model [component job-id default-row result-table docker-tag year]
+(defn run-model [backend-impl model-name docker-tag year]
   ;; Define some vars for pedagogical clarity
-  (let [backend (get-in component [:see :backend :name])
-        tracker-impl (get-in component [:see :job :tracker])
-        track-job (base/get-tracker-fn backend)
-        func #'exec-docker-run
-        args [job-id docker-tag year]]
-    (log/trace "Backend: " backend)
-    (log/trace "Args:" args)
+  (let [cfg (:cfg backend-impl)
+        tracker-impl (tracker/new
+                       model-name
+                       (:cfg backend-impl)
+                       (:db-conn backend-impl)
+                       (:event-thread backend-impl))
+        model-func #'exec-docker-run
+        model-args [job-id docker-tag year]]
+    (log/trace "Args:" model-args)
     (tracker/track-job
       tracker-impl
-      job-id
-      default-row
-      result-table
-      [func args])))
+      model-func
+      model-args)))
 

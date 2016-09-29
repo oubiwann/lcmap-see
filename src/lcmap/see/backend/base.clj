@@ -61,5 +61,7 @@
 
 (defn run-model
   ""
-  [this model-name args]
-  (apply (get-model this model-name) args))
+  [this args]
+  (let [model-name (first args)
+        model (get-model this model-name)]
+    (apply model (into [this] args))))

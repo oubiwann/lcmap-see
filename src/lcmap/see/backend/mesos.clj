@@ -14,12 +14,12 @@
 ;;; by the backend implementations in order to perform the duties of a
 ;;; component, a science model, and any other defined protocols.
 
-(defrecord MesosBackend [name cfg])
+(defrecord MesosBackend [name cfg db-conn event-thread])
 
 (extend MesosBackend see/IComponentable see/componentable-default-behaviour)
 (extend MesosBackend see/IModelable see/modelable-default-behaviour)
 
 (defn new-backend
   ""
-  [cfg]
-  (->MesosBackend :mesos cfg))
+  [cfg db-conn event-thread]
+  (->MesosBackend :mesos cfg db-conn event-thread))
