@@ -24,11 +24,7 @@
 
 (defn run-model [backend-impl model-name sleep-time year]
   (let [cfg (:cfg backend-impl)
-        tracker-impl (tracker/new
-                       model-name
-                       (:cfg backend-impl)
-                       (:db-conn backend-impl)
-                       (:event-thread backend-impl))
+        tracker-impl (tracker/new model-name backend-impl)
         model-func #'long-running-func
         model-args [sleep-time year]]
     (log/trace "Passing model args to tracker:" model-args)

@@ -43,11 +43,7 @@
   * ``wc`` (with the optional ``--bytes``, ``--words``, or ``--lines`` flags)"
   [backend-impl model-name line-number unique-count bytes words lines]
   (let [cfg (:cfg backend-impl)
-        tracker-impl (tracker/new
-                       model-name
-                       (:cfg backend-impl)
-                       (:db-conn backend-impl)
-                       (:event-thread backend-impl))
+        tracker-impl (tracker/new model-name backend-impl)
         model-func #'exec-pipe-run
         model-args [job-id line-number unique-count bytes words lines]]
     (log/debugf "run-model has [func args]: [%s %s]" model-func model-args)

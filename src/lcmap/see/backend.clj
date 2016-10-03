@@ -6,7 +6,8 @@
 (defn new
   ""
   [cfg db-conn]
-  (let [constructor (base/get-constructor-fn (:backend cfg))]
+  (let [
+        constructor (base/get-constructor-fn (:backend cfg))]
     (log/debug "Got constructor:" constructor)
     (constructor cfg db-conn)))
 

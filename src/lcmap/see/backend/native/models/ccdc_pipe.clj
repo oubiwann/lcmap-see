@@ -56,11 +56,7 @@
   [backend-impl model-name spectra x-val y-val start-time end-time row col
    in-dir out-dir scene-list verbose]
   (let [cfg (:cfg backend-impl)
-        tracker-impl (tracker/new
-                       model-name
-                       (:cfg backend-impl)
-                       (:db-conn backend-impl)
-                       (:event-thread backend-impl))
+        tracker-impl (tracker/new model-name backend-impl)
         model-func #'exec-pipe-run
         model-args [job-id spectra x-val y-val start-time end-time
               row col in-dir out-dir scene-list verbose]]

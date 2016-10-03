@@ -40,11 +40,7 @@
 (defn run-model [backend-impl model-name row col in-dir out-dir scene-list
                  verbose]
   (let [cfg (:cfg backend-impl)
-        tracker-impl (tracker/new
-                       model-name
-                       (:cfg backend-impl)
-                       (:db-conn backend-impl)
-                       (:event-thread backend-impl))
+        tracker-impl (tracker/new model-name backend-impl)
         model-func #'exec-docker-run
         model-args [row col in-dir out-dir scene-list verbose]]
     (log/debugf "run-model has [func args]: [%s %s]" model-func model-args)
