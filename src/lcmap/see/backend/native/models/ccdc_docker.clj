@@ -37,8 +37,8 @@
       1 (:err result)
       [:error "unexpected output" result])))
 
-(defn run-model [backend-impl model-name
-                 row col in-dir out-dir scene-list verbose]
+(defn run-model [backend-impl model-name row col in-dir out-dir scene-list
+                 verbose]
   (let [cfg (:cfg backend-impl)
         tracker-impl (tracker/new
                        model-name

@@ -42,7 +42,6 @@
   * ``uniq`` (with the optional ``--count`` flag)
   * ``wc`` (with the optional ``--bytes``, ``--words``, or ``--lines`` flags)"
   [backend-impl model-name line-number unique-count bytes words lines]
-  ;; Define some vars for pedagogical clarity
   (let [cfg (:cfg backend-impl)
         tracker-impl (tracker/new
                        model-name

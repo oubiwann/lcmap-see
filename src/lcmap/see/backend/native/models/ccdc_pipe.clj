@@ -53,8 +53,8 @@
 (defn run-model
   "This a prototype CCDC model which runs the lcmap command line tool's 'rod' query
   and pipes the results to ccdc as input."
-  [backend-impl model-name spectra x-val y-val
-   start-time end-time row col in-dir out-dir scene-list verbose]
+  [backend-impl model-name spectra x-val y-val start-time end-time row col
+   in-dir out-dir scene-list verbose]
   (let [cfg (:cfg backend-impl)
         tracker-impl (tracker/new
                        model-name
