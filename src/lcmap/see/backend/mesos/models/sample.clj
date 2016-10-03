@@ -5,28 +5,24 @@
   (:require [clojure.tools.logging :as log]
             [lcmap.see.backend.mesos.models.sample.framework :as framework]
             [lcmap.see.job.tracker :as tracker]
+            ;; The following line is CRUCIAL in order to resolve constructors
             [lcmap.see.job.tracker.mesos]))
 
 ;; Developer caution! -- It may be tenmpting to this "this could just be
 ;; a method of the backend, for the IModelable protocol ..."
 ;;
-;; But! Remember: IModelable is not the same as IModel ... backends are
+;; But! Remember: IModelable is not the same as an IModel ... backends are
 ;; used to *lookup* models (and call them), not *be* models. If you want
 ;; to use call the following function as a method, you will need to create
 ;; a new IModel protocol and associated implementations *for each model*.
 ;; It's probably more efficient just to use a function ...
 
 (defn run-model [backend-impl model-name seconds year]
-  (let [cfg (:cfg backend-impl)
-        tracker-impl (tracker/new
-                       model-name
-                       (:cfg backend-impl)
-                       (:db-conn backend-impl)
-                       (:event-thread backend-impl))
-        model-func #'framework/run
+  (let [tracker-impl (tracker/new model-name backend-impl)
+        model-wrapper #'framework/run
         model-args [backend-impl tracker-impl seconds year]]
     (log/trace "Passing model args to tracker:" model-args)
     (tracker/track-job
       tracker-impl
-      model-func
+      model-wrapper
       model-args)))

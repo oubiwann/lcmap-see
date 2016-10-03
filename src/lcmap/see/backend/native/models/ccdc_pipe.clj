@@ -10,7 +10,11 @@
             [lcmap.see.util :as util]))
 
 (defn exec-pipe-run
-  "This is the function that actually calls the science model. This model
+  "This function is ultimately called by the Job Tracker, which is what passes
+  the `job-id` argument. The remaining args are what get set in the `run-model`
+  function below.
+
+  This is the function that actually calls the science model. This model
   accomplishes this in two stages:
 
   1) it calls to the lcmap command line tool, querying for rod data
@@ -20,8 +24,8 @@
   have been setup (requirements installed) and set to active. Also, the
   ccdc needs to have been compiled and installed to a location that is
   on the system PATH."
-  [[spectra x-val y-val start-time end-time row col in-dir out-dir scene-list
-    verbose]]
+  [job-id [spectra x-val y-val start-time end-time row col in-dir out-dir
+   scene-list verbose]]
   (let [;; lcmap cmdline tool flags
         spectra-flag (util/make-flag "--spectra" spectra)
         x-flag (util/make-flag "-x" x-val)
@@ -57,11 +61,11 @@
    in-dir out-dir scene-list verbose]]
   (let [cfg (:cfg backend-impl)
         tracker-impl (tracker/new model-name backend-impl)
-        model-func #'exec-pipe-run
+        model-wrapper #'exec-pipe-run
         model-args [spectra x-val y-val start-time end-time
                     row col in-dir out-dir scene-list verbose]]
     (log/debugf "run-model has [func args]: [%s %s]" model-func model-args)
     (tracker/track-job
       tracker-impl
-      model-func
+      model-wrapper
       model-args)))

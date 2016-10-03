@@ -14,12 +14,16 @@
 (def docker-tag (format "%s/%s" dockerhub-org dockerhub-repo))
 
 (defn exec-docker-run
-  "This is the function that actually calls the science model. This model
+  "This function is ultimately called by the Job Tracker, which is what passes
+  the `job-id` argument. The remaining args are what get set in the `run-model`
+  function below.
+
+  This is the function that actually calls the science model. This model
   accomplishes this by calling the ccdc Docker image. This is essentially a
   pass-through to the ccdc executable in the Docker image, so the Docker ``run``
   command takes all the same parameters/flags that would be given if the ccdc
   executable was getting called directly."
-  [[row col in-dir out-dir scene-list verbose]]
+  [job-id [row col in-dir out-dir scene-list verbose]]
   (let [verbose-flag (util/make-flag "--verbose" verbose :unary? true)
         in-dir-flag (util/make-flag "--inDir" in-dir)
         out-dir-flag (util/make-flag "--outDir" out-dir)
@@ -41,10 +45,10 @@
                  verbose]]
   (let [cfg (:cfg backend-impl)
         tracker-impl (tracker/new model-name backend-impl)
-        model-func #'exec-docker-run
+        model-wrapper #'exec-docker-run
         model-args [row col in-dir out-dir scene-list verbose]]
     (log/debugf "run-model has [func args]: [%s %s]" model-func model-args)
     (tracker/track-job
       tracker-impl
-      model-func
+      model-wrapper
       model-args)))
