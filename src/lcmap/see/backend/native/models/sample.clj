@@ -6,9 +6,8 @@
             [clj-commons-exec :as exec]
             [lcmap.see.job.tracker :as tracker]))
 
-(defn long-running-func [job-id [sleep-time year]]
-  (log/debugf "\n\nRunning job %s (waiting for %s seconds) ...\n"
-              job-id
+(defn long-running-func [[sleep-time year]]
+  (log/debugf "\n\nRunning job (waiting for %s seconds) ...\n"
               sleep-time)
   @(exec/sh ["sleep" (str sleep-time)])
   (:out @(exec/sh ["cal" year])))
@@ -22,7 +21,7 @@
 ;; a new IModel protocol and associated implementations *for each model*.
 ;; It's probably more efficient just to use a function ...
 
-(defn run-model [backend-impl model-name sleep-time year]
+(defn run-model [backend-impl [model-name sleep-time year]]
   (let [cfg (:cfg backend-impl)
         tracker-impl (tracker/new model-name backend-impl)
         model-func #'long-running-func

@@ -20,8 +20,8 @@
   have been setup (requirements installed) and set to active. Also, the
   ccdc needs to have been compiled and installed to a location that is
   on the system PATH."
-  [[job-id spectra x-val y-val start-time end-time
-    row col in-dir out-dir scene-list verbose]]
+  [[spectra x-val y-val start-time end-time row col in-dir out-dir scene-list
+    verbose]]
   (let [;; lcmap cmdline tool flags
         spectra-flag (util/make-flag "--spectra" spectra)
         x-flag (util/make-flag "-x" x-val)
@@ -53,13 +53,13 @@
 (defn run-model
   "This a prototype CCDC model which runs the lcmap command line tool's 'rod' query
   and pipes the results to ccdc as input."
-  [backend-impl model-name spectra x-val y-val start-time end-time row col
-   in-dir out-dir scene-list verbose]
+  [backend-impl [model-name spectra x-val y-val start-time end-time row col
+   in-dir out-dir scene-list verbose]]
   (let [cfg (:cfg backend-impl)
         tracker-impl (tracker/new model-name backend-impl)
         model-func #'exec-pipe-run
-        model-args [job-id spectra x-val y-val start-time end-time
-              row col in-dir out-dir scene-list verbose]]
+        model-args [spectra x-val y-val start-time end-time
+                    row col in-dir out-dir scene-list verbose]]
     (log/debugf "run-model has [func args]: [%s %s]" model-func model-args)
     (tracker/track-job
       tracker-impl

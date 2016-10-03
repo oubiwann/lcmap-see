@@ -10,7 +10,7 @@
 
 (defn exec-pipe-run
   ""
-  [[job-id line-number unique-count bytes words lines]]
+  [[line-number unique-count bytes words lines]]
   (let [number-flag (util/make-flag "--number" line-number :unary? true)
         count-flag (util/make-flag "--count" unique-count :unary? true)
         bytes-flag (util/make-flag "--bytes" bytes :unary? true)
@@ -41,11 +41,11 @@
   * ``cat /etc/hosts`` (with the optional ``--number`` flag)
   * ``uniq`` (with the optional ``--count`` flag)
   * ``wc`` (with the optional ``--bytes``, ``--words``, or ``--lines`` flags)"
-  [backend-impl model-name line-number unique-count bytes words lines]
+  [backend-impl [model-name line-number unique-count bytes words lines]]
   (let [cfg (:cfg backend-impl)
         tracker-impl (tracker/new model-name backend-impl)
         model-func #'exec-pipe-run
-        model-args [job-id line-number unique-count bytes words lines]]
+        model-args [line-number unique-count bytes words lines]]
     (log/debugf "run-model has [func args]: [%s %s]" model-func model-args)
     (tracker/track-job
       tracker-impl
