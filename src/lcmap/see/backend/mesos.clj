@@ -9,12 +9,12 @@
 ;; defined for generilzed SEE backends. The record should support data needed
 ;; by the backend implementations in order to perform the duties of a
 ;; component, a science model, and any other defined protocols.
-(defrecord MesosBackend [name cfg db-conn event-thread])
+(defrecord MesosBackend [name cfg db-conn])
 
 (extend MesosBackend see/IComponentable see/componentable-default-behaviour)
 (extend MesosBackend see/IModelable see/modelable-default-behaviour)
 
 (defn new-backend
   ""
-  [cfg db-conn event-thread]
-  (->MesosBackend :mesos cfg db-conn event-thread))
+  [cfg db-conn]
+  (->MesosBackend :mesos cfg db-conn))

@@ -14,10 +14,9 @@
   (start [component]
     (log/info "Starting LCMAP SEE execution backend ...")
     (let [see-cfg (get-in component [:cfg :lcmap.see])
-          db-conn (get-in component [:job :jobdb :conn])
-          event-thread (get-in component [:job :event-thread])]
+          db-conn (get-in component [:jobdb :conn])]
       (log/debug "Using config:" see-cfg)
-      (let [backend-impl (backend/new see-cfg db-conn event-thread)]
+      (let [backend-impl (backend/new see-cfg db-conn)]
         (backend/set-up backend-impl)
         (log/debug "Component keys:" (keys component))
         (log/debug "Successfully started LCMAP SEE backend:" backend-impl)

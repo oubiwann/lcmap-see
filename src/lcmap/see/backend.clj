@@ -5,10 +5,10 @@
 
 (defn new
   ""
-  [cfg db-conn event-thread]
+  [cfg db-conn]
   (let [constructor (base/get-constructor-fn (:backend cfg))]
     (log/debug "Got constructor:" constructor)
-    (constructor cfg db-conn event-thread)))
+    (constructor cfg db-conn)))
 
 (defprotocol IComponentable
   "An interface for backends which need to be stopped and started as part of a
