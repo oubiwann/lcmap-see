@@ -9,9 +9,9 @@
             [lcmap.see.job.tracker.native]))
 
 (defn long-running-func [job-id [model-name sleep-time year]]
-  "This function is ultimately called by the Job Tracker, which is what passes
-  the `job-id` argument. The remaining args are what get set in the `run-model`
-  function below."
+  "This function is ultimately called by a Job Tracker implementation (usually
+  `start-run-job`), which is what passes the `job-id` argument. The remaining
+  args are what get set in the `run-model` function below."
   (log/debugf
     (str "\n\nRunning model '%s' with job-id '%s' (waiting for %s seconds)"
          " ...\n")

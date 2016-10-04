@@ -14,9 +14,9 @@
 (def docker-tag (format "%s/%s" dockerhub-org dockerhub-repo))
 
 (defn exec-docker-run
-  "This function is ultimately called by the Job Tracker, which is what passes
-  the `job-id` argument. The remaining args are what get set in the `run-model`
-  function below.
+  "This function is ultimately called by a Job Tracker implementation (usually
+  `start-run-job`), which is what passes the `job-id` argument. The remaining
+  args are what get set in the `run-model` function below.
 
   This is the function that actually calls the science model. This model
   accomplishes this by calling the ccdc Docker image. This is essentially a

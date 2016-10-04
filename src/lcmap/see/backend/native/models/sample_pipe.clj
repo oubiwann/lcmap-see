@@ -9,9 +9,9 @@
             [lcmap.see.util :as util]))
 
 (defn exec-pipe-run
-  "This function is ultimately called by the Job Tracker, which is what passes
-  the `job-id` argument. The remaining args are what get set in the `run-model`
-  function below."
+  "This function is ultimately called by a Job Tracker implementation (usually
+  `start-run-job`), which is what passes the `job-id` argument. The remaining
+  args are what get set in the `run-model` function below."
   [job-id [backend-impl line-number unique-count bytes words lines]]
   (let [number-flag (util/make-flag "--number" line-number :unary? true)
         count-flag (util/make-flag "--count" unique-count :unary? true)

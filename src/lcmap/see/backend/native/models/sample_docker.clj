@@ -4,9 +4,9 @@
             [lcmap.see.job.tracker :as tracker]))
 
 (defn exec-docker-run
-  "This function is ultimately called by the Job Tracker, which is what passes
-  the `job-id` argument. The remaining args are what get set in the `run-model`
-  function below."
+  "This function is ultimately called by a Job Tracker implementation (usually
+  `start-run-job`), which is what passes the `job-id` argument. The remaining
+  args are what get set in the `run-model` function below."
   [job-id [model-name docker-tag year]]
   (log/debugf "\n\nRunning job (executing docker tag %s) ...\n"
               docker-tag)

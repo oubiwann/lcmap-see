@@ -10,9 +10,9 @@
             [lcmap.see.util :as util]))
 
 (defn exec-pipe-run
-  "This function is ultimately called by the Job Tracker, which is what passes
-  the `job-id` argument. The remaining args are what get set in the `run-model`
-  function below.
+  "This function is ultimately called by a Job Tracker implementation (usually
+  `start-run-job`), which is what passes the `job-id` argument. The remaining
+  args are what get set in the `run-model` function below.
 
   This is the function that actually calls the science model. This model
   accomplishes this in two stages:
