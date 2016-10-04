@@ -36,6 +36,25 @@
    :mem-per-task 128
    :max-tasks nil})
 
+(defrecord FrameworkState [driver channel exec-info launched-tasks limits
+                           backend tracker model-name model-args see-job-id])
+
+(defn new-state
+  ""
+  [driver ch backend tracker model-name model-args see-job-id]
+  (map->FrameworkState
+      {:driver driver
+       :channel ch
+       :exec-info nil
+       :launched-tasks 0
+       ;; XXX remove or update limits-processing code
+       :limits (assoc limits :max-tasks 2)
+       :backend backend
+       :tracker tracker
+       :model-name model-name
+       :model-args model-args
+       :see-job-id see-job-id}))
+
 ;;; >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 ;;; Framework callbacks
 ;;; >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
@@ -174,10 +193,16 @@
 ;;; >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
 (defn run
-  "This is the function that actually runs the framework."
-  [backend-impl tracker-impl sleep-time year]
+  "This is the function that actually runs the framework.
+
+  This function is ultimately called by a Job Tracker implementation (see
+  the tracker's method `start-run-job`), which is what passes the `job-id`
+  argument. The remaining args are what got passed to the tracker by
+  `lcmap.see.backend.mesos.models.sample/run-model`."
+  [see-job-id [backend-impl tracker-impl model-name sleep-time year]]
   (log/info "Running LCMAP SEE sample Mesos framework ...")
-  (log/debug "Got backend:" backend-impl)
+  (log/trace "Got backend:" backend-impl)
+  (log/trace "Got tracker:" tracker-impl)
   (let [ch (chan)
         sched (async-scheduler/scheduler ch)
         driver (scheduler-driver sched
@@ -185,20 +210,16 @@
                                  (util/get-master backend-impl)
                                  nil
                                  false)
-        model-args [sleep-time year]]
-    (log/debug "Starting sample scheduler ...")
+        model-args [sleep-time year]
+        state (new-state
+                driver ch backend-impl tracker-impl model-name
+                model-args see-job-id)]
+    (log/debug "Starting sample Mesos scheduler ...")
+    (log/trace "Using initial state:" state)
     (scheduler/start! driver)
-    (log/debug "Reducing over sample scheduler channel messages ...")
+    (log/debug "Reducing over sample Mesos scheduler channel messages ...")
     (a/reduce
       (partial comm-framework/wrap-handle-msg handle-msg)
-      {:driver driver
-       :channel ch
-       :exec-info nil
-       :launched-tasks 0
-       ;; XXX remove or update limits-processing code
-       :limits (assoc limits :max-tasks 2)
-       :backend backend-impl
-       :tracker tracker-impl
-       :model-args model-args}
+      state
       ch)
     (scheduler/join! driver)))

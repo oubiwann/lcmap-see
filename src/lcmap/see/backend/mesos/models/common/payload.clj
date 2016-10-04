@@ -29,6 +29,9 @@
 (defn get-master-info
   ""
   [payload]
+  (log/debug "Getting master info ...")
+  (log/debug "Got payload:" payload)
+  (log/debug "Returning master-info:" (:master-info payload))
   (:master-info payload))
 
 (defn get-offer-id

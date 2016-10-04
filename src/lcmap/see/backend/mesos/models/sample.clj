@@ -20,7 +20,7 @@
 (defn run-model [backend-impl model-name seconds year]
   (let [tracker-impl (tracker/new model-name backend-impl)
         model-wrapper #'framework/run
-        model-args [backend-impl tracker-impl seconds year]]
+        model-args [backend-impl tracker-impl model-name seconds year]]
     (log/trace "Passing model args to tracker:" model-args)
     (tracker/track-job
       tracker-impl

@@ -9,7 +9,7 @@
        (assoc {} :value)))
 
 (defn get-master
-  [component]
-  (str (get-in component [:see :mesos-host])
+  [backend-impl]
+  (str (get-in backend-impl [:cfg :mesos-host])
        ":"
-       (get-in component [:see :mesos-port])))
+       (get-in backend-impl [:cfg :mesos-port])))
