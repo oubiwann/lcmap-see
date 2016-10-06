@@ -62,7 +62,7 @@
                  [clj-gdal]
                  ;; Dev and project metadata
                  [leiningen-core]]
-  :plugins [[lein-parent "0.3.0"]]
+  :plugins [[lein-parent "0.3.1"]]
   :source-paths ["src"]
   :java-agents [[co.paralleluniverse/quasar-core "0.7.6"]]
   :jvm-opts ["-Dco.paralleluniverse.fibers.detectRunawayFibers=false"]
