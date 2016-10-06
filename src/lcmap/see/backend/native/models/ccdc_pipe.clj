@@ -64,7 +64,7 @@
         model-wrapper #'exec-pipe-run
         model-args [spectra x-val y-val start-time end-time
                     row col in-dir out-dir scene-list verbose]]
-    (log/debugf "run-model has [func args]: [%s %s]" model-func model-args)
+    (log/debugf "run-model has [func args]: [%s %s]" model-wrapper model-args)
     (tracker/track-job
       tracker-impl
       model-wrapper

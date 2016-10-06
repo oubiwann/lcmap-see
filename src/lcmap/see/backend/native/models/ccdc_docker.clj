@@ -47,7 +47,7 @@
         tracker-impl (tracker/new model-name backend-impl)
         model-wrapper #'exec-docker-run
         model-args [row col in-dir out-dir scene-list verbose]]
-    (log/debugf "run-model has [func args]: [%s %s]" model-func model-args)
+    (log/debugf "run-model has [func args]: [%s %s]" model-wrapper model-args)
     (tracker/track-job
       tracker-impl
       model-wrapper

@@ -48,7 +48,7 @@
         tracker-impl (tracker/new model-name backend-impl)
         model-wrapper #'exec-pipe-run
         model-args [backend-impl line-number unique-count bytes words lines]]
-    (log/debugf "run-model has [func args]: [%s %s]" model-func model-args)
+    (log/debugf "run-model has [func args]: [%s %s]" model-wrapper model-args)
     (tracker/track-job
       tracker-impl
       model-wrapper
