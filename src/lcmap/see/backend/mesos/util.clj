@@ -10,6 +10,6 @@
 
 (defn get-master
   [backend-impl]
-  (str (get-in backend-impl [:cfg :mesos-host])
-       ":"
-       (get-in backend-impl [:cfg :mesos-port])))
+  (format "%s:%s"
+          (get-in backend-impl [:cfg :mesos-host])
+          (get-in backend-impl [:cfg :mesos-port])))
