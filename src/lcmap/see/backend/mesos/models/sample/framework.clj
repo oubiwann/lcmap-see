@@ -1,5 +1,12 @@
 (ns lcmap.see.backend.mesos.models.sample.framework
-  ""
+  "A sample Mesos framework for the LCMAP SEE.
+
+  From the perspective of LCMAP SEE, this namespace needs only define one
+  function: that which was defined and passed to the `track-job` function
+  in `lcmap.see.backend.mesos.models.sample`.
+
+  From the perspective of the Mesomatic async framework, this
+  namespace needs to define all the scheduler handlers."
   (:require [clojure.core.async :as a :refer [chan <! go]]
             [clojure.string :as string]
             [clojure.tools.logging :as log]
@@ -27,7 +34,7 @@
 ;;; attempt to keep things clear and clean for the learning experience. Do
 ;;; not emulate in production code!
 
-(def framework-info-map {:name "Example Framework (Clojure)"
+(def framework-info-map {:name "Example Framework (LCMAP SEE)"
                          :principal "test-framework-clojure"
                          :checkpoint true})
 (def limits
@@ -36,16 +43,25 @@
    :mem-per-task 128
    :max-tasks nil})
 
-(defrecord FrameworkState [driver channel exec-info launched-tasks limits
-                           backend tracker model-name model-args see-job-id])
+(defrecord FrameworkState [
+  ;; Mesos State
+  driver channel exec-info master-info framework-id offers tasks
+  ;; LCMAP SEE State
+  launched-tasks limits backend tracker model-name model-args see-job-id])
 
 (defn new-state
   ""
   [driver ch backend tracker model-name model-args see-job-id]
   (map->FrameworkState
-      {:driver driver
+      {;; Mesos State
+       :driver driver
        :channel ch
        :exec-info nil
+       :master-info nil
+       :framework-id nil
+       :offers nil
+       :tasks nil
+       ;; LCMAP SEE State
        :launched-tasks 0
        ;; XXX remove or update limits-processing code
        :limits (assoc limits :max-tasks 2)
@@ -53,7 +69,8 @@
        :tracker tracker
        :model-name model-name
        :model-args model-args
-       :see-job-id see-job-id}))
+       :see-job-id see-job-id})
+)
 
 ;;; >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 ;;; Framework callbacks
@@ -205,11 +222,17 @@
   (log/trace "Got tracker:" tracker-impl)
   (let [ch (chan)
         sched (async-scheduler/scheduler ch)
+        master (util/get-master backend-impl)
+        ;master "10.0.4.193:5050"
+        _ (log/debug "Got scheduluer:" sched)
+        _ (log/debug "Got master for scheduler:" master)
+        _ (log/debug "Got framework info map for scheduler:" framework-info-map)
         driver (scheduler-driver sched
                                  framework-info-map
-                                 (util/get-master backend-impl)
+                                 master
                                  nil
                                  false)
+        _ (log/debug "Got scheduler driver:" driver)
         model-args [sleep-time year]
         state (new-state
                 driver ch backend-impl tracker-impl model-name

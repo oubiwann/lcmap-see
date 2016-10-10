@@ -31,8 +31,9 @@
   [payload]
   (log/debug "Getting master info ...")
   (log/debug "Got payload:" payload)
-  (log/debug "Returning master-info:" (:master-info payload))
-  (:master-info payload))
+  (let [master-info (:master-info payload)]
+    (log/debug "Returning master-info:" master-info)
+    master-info))
 
 (defn get-offer-id
   ""
