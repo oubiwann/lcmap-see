@@ -8,6 +8,10 @@
        (str)
        (assoc {} :value)))
 
+(defn get-host
+  [backend-impl]
+  (get-in backend-impl [:cfg :mesos-host]))
+
 (defn get-master
   [backend-impl]
   (format "%s:%s"

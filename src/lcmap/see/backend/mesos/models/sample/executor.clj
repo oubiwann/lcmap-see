@@ -1,6 +1,6 @@
 (ns lcmap.see.backend.mesos.models.sample.executor
   ""
-  (:require [clojure.core.async :as a :refer [chan <! go]]
+  (:require [clojure.core.async :as async]
             [clojure.string :as string]
             [clojure.tools.logging :as log]
             [clojusc.twig :refer [pprint]]
@@ -135,6 +135,7 @@
           (run-task task-id new-state payload)
           (update-task-success task-id new-state payload))
     (catch Exception e
+      (log/error "Problem with launch-task:" e)
       (update-task-fail task-id e state payload))))
 
 ;;; >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
@@ -209,12 +210,12 @@
   ""
   [master]
   (log/infof "Running sample executor ...")
-  (let [ch (chan)
+  (let [ch (async/chan)
         exec (async-executor/executor ch)
-        driver (executor-driver exec)]
+        driver (executor-driver exec)
+        state {:driver driver :ch ch}]
     (log/debug "Starting sample executor ...")
     (executor/start! driver)
     (log/debug "Reducing over sample executor channel messages ...")
-    (a/reduce handle-msg {:driver driver
-                          :ch ch} ch)
+    (async/reduce handle-msg state ch)
     (executor/join! driver)))

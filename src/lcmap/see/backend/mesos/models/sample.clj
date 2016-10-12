@@ -1,7 +1,18 @@
 (ns lcmap.see.backend.mesos.models.sample
   "This sample runner demonstrates kicking off a job that is executed on
   Mesos with a synthetic (and variable) delay introduced to show asynchronous
-  results."
+  results.
+
+  Note that the function defined in this namespace conforms to the standard
+  defined for SEE model execution; it doesn't implement any spec, standard,
+  or other best practice for Mesos itself. As such, this represents the
+  boundary between SEE and Mesos. The `run` function that `run-model` in this
+  namespace references, on the other hand, *does* represent one of the common
+  ways in which Mesomatic Mesos frameworks are implemented, in particular as
+  part of a namespace that defines a `-main` function for use as an executable
+  .jar file. As such, that function (and namespace) represnts the other side
+  of the SEE-Mesos boundary that is 100% Mesos, with no SEE influence
+  whatsoever."
   (:require [clojure.tools.logging :as log]
             [lcmap.see.backend.mesos.models.sample.framework :as framework]
             [lcmap.see.job.tracker :as tracker]
