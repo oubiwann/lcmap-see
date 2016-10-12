@@ -84,7 +84,7 @@
   [state message]
   (send-log state :error message))
 
-(defn update-task-success
+(defn run-task
   ""
   [task-id state payload]
   (let [executor-id (get-executor-id payload)
@@ -100,6 +100,17 @@
     ;; ...
     ;; Task complete.
 
+    ;; The ext step should be to let the system know. First, though, if you
+    ;; have any updates you want to make to the state that will be used by the
+    ;; 'task-success' state change, you can do that here (we don't need to in
+    ;; this example).
+    state))
+
+(defn update-task-success
+  ""
+  [task-id state payload]
+  (let [executor-id (get-executor-id payload)
+        driver (:driver state)]
     (executor/send-status-update!
       driver
       (task/status-finished executor-id task-id))
@@ -116,16 +127,18 @@
       (task/status-failed executor-id task-id))
     (send-log-info state (format "Sample task %s failed" task-id))))
 
-(defn run-task
+(defn launch-task
   ""
   [task-id state payload]
   (try
-    (update-task-success task-id state payload)
+    (as-> state new-state
+          (run-task task-id new-state payload)
+          (update-task-success task-id new-state payload))
     (catch Exception e
       (update-task-fail task-id e state payload))))
 
 ;;; >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-;;; Framework callbacks
+;;; Executor callbacks
 ;;; >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 ;;;
 ;;; Note that these are not callbacks in the node.js or even Twisted (Python)
@@ -158,7 +171,7 @@
     (send-log-info state (format "Launching sample task %s ..." task-id))
     (log/debug "Sample task id:" task-id)
     (send-log-trace state (str "Sample task payload: " (pprint payload)))
-    (-> (run-task task-id state payload)
+    (-> (launch-task task-id state payload)
         (Thread.)
         (.start))
     state))
