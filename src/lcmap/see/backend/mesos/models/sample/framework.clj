@@ -27,9 +27,9 @@
 ;;; not emulate in production code!
 
 (def framework-info-map {:name "LCMAP SEE Sample Model (Mesos Framework)"
-                         :user "SEE Developer"
                          :principal "sample-framework"
                          :checkpoint true})
+
 (def limits
   "Note that :max-tasks gets set via an argument passed to the `run` function."
   {:cpus-per-task 1
@@ -85,23 +85,19 @@
         sched (async-scheduler/scheduler ch)
         master (util/get-master backend-impl)
         host (util/get-host backend-impl)
-        _ (log/debug "Got scheduluer:" sched)
-        _ (log/debug "Got master for scheduler:" master)
-        _ (log/debug "Got framework info map for scheduler:" framework-info-map)
         driver (scheduler-driver sched
                                  (assoc framework-info-map :hostname host)
                                  master
                                  nil
                                  false)
-        _ (log/debug "Got scheduler driver:" driver)
         model-args [sleep-time year]
         state (new-state
                 driver ch backend-impl tracker-impl model-name
                 model-args see-job-id)
         handler (partial
                   comm-framework/wrap-handle-msg
-                  sample-scheduler/handle-msg)
-        _ (log/debug "Got handler:" handler)]
+                  sample-scheduler/handle-msg)]
+    (log/trace "Got handler:" handler)
     (log/debug "Starting example model scheduler ...")
     (log/trace "Using initial state:" state)
     (scheduler/start! driver)

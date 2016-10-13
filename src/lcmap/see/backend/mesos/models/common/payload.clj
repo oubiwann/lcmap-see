@@ -70,6 +70,11 @@
   [payload]
   (get-in payload [:agent-id :value]))
 
+(defn get-task-id
+  ""
+  [payload]
+  (get-in payload [:task :task-id :value]))
+
 (defn get-message
   ""
   [payload]

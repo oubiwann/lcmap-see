@@ -61,3 +61,30 @@
     unary? (when (make-bool value) flag)
     (nil? value) nil
     :else (format "%s %s" flag value)))
+
+(defn get-local-ip
+  ""
+  []
+  (.getHostAddress (java.net.InetAddress/getLocalHost)))
+
+(defn get-metas
+  ""
+  [an-ns]
+  (->> an-ns
+       (ns-publics)
+       (map (fn [[k v]] [k (meta v)]))
+       (into {})))
+
+(defn get-meta
+  "Takes the same form as the general `get-in` function:
+
+      (get-meta 'my.name.space ['my-func :doc])"
+  [an-ns rest]
+  (-> an-ns
+      (get-metas)
+      (get-in rest)))
+
+(defn get-docstring
+  ""
+  [an-ns fn-name]
+  (get-meta an-ns [fn-name :doc]))

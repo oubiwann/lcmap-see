@@ -21,7 +21,8 @@
             [lcmap.see.backend.mesos.models.sample.executor :as executor]
             [lcmap.see.backend.mesos.models.sample.offers :as offers]
             [lcmap.see.backend.mesos.models.sample.task :as task]
-            [lcmap.see.backend.mesos.util :as util]))
+            [lcmap.see.backend.mesos.util :as util]
+            [lcmap.see.util :as see-util]))
 
 ;;; >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 ;;; Framework callbacks
@@ -48,7 +49,10 @@
   (let [master-info (comm-payload/get-master-info payload)
         framework-id (comm-payload/get-framework-id payload)
         exec-info (executor/cmd-info-map
-                    master-info framework-id)] ; XXX maybe pass tracker impl here?
+                    state
+                    master-info
+                    framework-id
+                    (util/cwd))]
     (log/info "Registered with framework id:" framework-id)
     (log/trace "Got master info:" (pprint master-info))
     (log/trace "Got state:" (pprint state))
@@ -59,7 +63,8 @@
 
 (defmethod handle-msg :disconnected
   [state payload]
-  (log/infof "Framework %s disconnected." (comm-payload/get-framework-id payload))
+  (log/infof "Framework %s disconnected."
+             (comm-payload/get-framework-id payload))
   state)
 
 (defmethod handle-msg :resource-offers
@@ -102,7 +107,8 @@
 
 (defmethod handle-msg :disconnected
   [state payload]
-  (log/infof "Framework %s disconnected." (comm-payload/get-framework-id payload))
+  (log/infof "Framework %s disconnected."
+             (comm-payload/get-framework-id payload))
   state)
 
 (defmethod handle-msg :offer-rescinded

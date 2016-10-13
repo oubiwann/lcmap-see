@@ -20,7 +20,6 @@
                 (comm-payload/get-error-msg payload))
     (async/close! (comm-state/get-channel state))
     (scheduler/stop! (comm-state/get-driver state))
-    (util/finish :exit-code 127)
     state))
 
 (defn check-task-finished
@@ -40,7 +39,6 @@
           (scheduler/stop! (comm-state/get-driver new-state))
           ;; XXX get task output
           ;; XXX send output to job tracker using tracker.base/send-msg
-          (util/finish :exit-code 0)
           new-state)
         new-state))
     state))
@@ -60,7 +58,6 @@
                   (:source status)
                   (:message status))
       (scheduler/abort! (comm-state/get-driver state))
-      (util/finish :exit-code 127)
       state)
     state))
 

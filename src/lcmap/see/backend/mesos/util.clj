@@ -17,3 +17,10 @@
   (format "%s:%s"
           (get-in backend-impl [:cfg :mesos-host])
           (get-in backend-impl [:cfg :mesos-port])))
+
+(defn cwd
+  ""
+  []
+  (-> "."
+      (java.io.File.)
+      (.getAbsolutePath)))

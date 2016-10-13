@@ -88,36 +88,9 @@
     ;; copy `:env { ... }` into `{:user ...}` in your ~/.lein/profiles.clj and
     ;; then override values there
     :dev {
-      :aliases {"slamhound" ["run" "-m" "slam.hound"]}
       :source-paths ["dev-resources/src"]
-      :env
-        {:active-profile "development"
-         :db {:hosts ["127.0.0.1"]
-              :port 9042
-              :protocol-version 3
-              :keyspace "lcmap"
-              :credentials {
-                :username nil
-                :password nil}}
-          :log-level :debug}}
-    ;; configuration for testing environment
-    :testing {
-      :env
-        {:active-profile "testing"
-         :db {}
-         :http {}
-         :log-level :debug}}
-    ;; configuration for staging environment
-    :staging {
-      :env
-        {:active-profile "staging"
-         :db {}
-         :http {}
-         :log-level :warn}}
-    ;; configuration for production environment
-    :prod {
-      :env
-        {:active-profile "production"
-         :db {}
-         :http {}
-         :log-level :error}}})
+      :aliases {"see"
+          ^{:doc (str "Command line interface for LCMAP SEE commands.\n"
+                      "For more info run `lein see --help`\n")}
+          ^:pass-through-help
+          ["run" "-m" "lcmap.see.app"]}}})
