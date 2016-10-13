@@ -4,6 +4,12 @@
             [clojure.string :as string]
             [clojusc.twig :refer [pprint]]))
 
+(defn get-slave-id
+  ""
+  [offer]
+  (log/debug "Got offer:" offer)
+  (:slave-id offer))
+
 (defn get-agent-id
   ""
   [offer]
