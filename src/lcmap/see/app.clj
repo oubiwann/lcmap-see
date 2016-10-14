@@ -56,14 +56,17 @@
       "--help" (usage)
       "-h" (usage)))
   ([master science-model task-type]
-    (component/start :logger)
-    (log/debug "Using master:" master)
-    (log/debug "Got science-model:" science-model)
-    (log/debug "Got task-type:" task-type)
-    (condp = task-type
-      ;; XXX no "framework" cli support yet ...
-      ;;"framework" (sample-fr/run)
-      ;; XXX in the future, this can be made dynamic -- for now, we just want
-      ;; to be able to execute the sample model's executor for testing
-      ;; purposes
-      "executor" (sample-ex/run master))))
+    (let [system (components/init)]
+      (component/start system)
+      (util/add-shutdown-handler #(component/stop system))
+      (log/debug "Using master:" master)
+      (log/debug "Got science-model:" science-model)
+      (log/debug "Got task-type:" task-type)
+      (condp = task-type
+        ;; XXX no "framework" cli support yet ...
+        ;;"framework" (sample-fr/run)
+        ;; XXX in the future, this can be made dynamic -- for now, we just want
+        ;; to be able to execute the sample model's executor for testing
+        ;; purposes
+        "executor" (sample-ex/run master))
+      (util/finish 0))))
