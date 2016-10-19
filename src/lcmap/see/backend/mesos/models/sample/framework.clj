@@ -85,11 +85,9 @@
         sched (async-scheduler/scheduler ch)
         master (util/get-master backend-impl)
         host (util/get-host backend-impl)
-        driver (scheduler-driver sched
-                                 (assoc framework-info-map :hostname host)
-                                 master
-                                 nil
-                                 false)
+        driver (scheduler-driver
+                 sched (assoc framework-info-map :hostname host)
+                 master nil false)
         model-args [sleep-time year]
         state (new-state
                 driver ch backend-impl tracker-impl model-name
@@ -98,8 +96,8 @@
                   comm-framework/wrap-handle-msg
                   sample-scheduler/handle-msg)]
     (log/trace "Got handler:" handler)
-    (log/debug "Starting example model scheduler ...")
     (log/trace "Using initial state:" state)
+    (log/debug "Starting example model scheduler ...")
     (scheduler/start! driver)
     (log/debug "Reducing over example model scheduler channel messages ...")
     (async/reduce handler state ch)

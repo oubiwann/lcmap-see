@@ -71,7 +71,7 @@
   [state payload]
   (log/info "Handling :resource-offers message ...")
   (log/trace "Got state:" (pprint state))
-  (let [offers-data (comm-payload/get-offers payload)
+  (let [offers-data [(first (comm-payload/get-offers payload))]
         offer-ids (offers/get-ids offers-data)
         tasks (offers/process-all state payload offers-data)
         driver (comm-state/get-driver state)]
