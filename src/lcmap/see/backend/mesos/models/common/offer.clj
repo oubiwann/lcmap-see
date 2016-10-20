@@ -15,3 +15,8 @@
   [offer]
   (log/debug "Got offer:" offer)
   (:agent-id offer))
+
+(defn get-offer-id
+  ""
+  [offer]
+  (:id offer))
