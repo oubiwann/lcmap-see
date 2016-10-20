@@ -34,8 +34,11 @@
   ;; Better yet: define a callback partial that only needs to be passed the
   ;; final results (everything else is ready to go, including the messsage-
   ;; sending to the event thread).
+  ;;
+  ;; XXX the following is currently blocking and needs to be run asynchronously
+  ;; or in a separate thread
   (job-func job-id job-args)
-  (log/debugf "Kicked off Mesos framework with job-id:" job-id)
+  (log/debugf "Kicked off Mesos framework with job-id %s ..." job-id)
   ;; XXX send message!
   )
 
