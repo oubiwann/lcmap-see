@@ -4,24 +4,23 @@
   synthetic (and variable) delay introduced to show asynchronous results."
   (:require [clojure.tools.logging :as log]
             [clj-commons-exec :as exec]
-            [lcmap.see.job.tracker :as tracker]
-            [lcmap.see.job.tracker.native]))
+            [lcmap.see.job.tracker :as tracker]))
 
 (defn long-running-func [[job-id sleep-time year]]
   (log/debugf "\n\nRunning job %s (waiting for %s seconds) ...\n"
-                     job-id
-                     sleep-time)
+              job-id
+              sleep-time)
   @(exec/sh ["sleep" (str sleep-time)])
   (:out @(exec/sh ["cal" year])))
 
 (defn run-model [component job-id default-row result-table seconds year]
-  ;; Define some vars for pedagogical clarity
+  ;; Define some vars for clarity
   (let [backend (get-in component [:see :backend :name])
         tracker-impl (get-in component [:see :job :tracker])
         func #'long-running-func
         args [job-id seconds year]]
     (log/trace "Backend: " backend)
-    (log/trace "Args:" args)
+    (log/trace "Passing model args to tracker:" args)
     (tracker/track-job
       tracker-impl
       job-id

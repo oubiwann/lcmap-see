@@ -5,12 +5,18 @@
             [clojurewerkz.cassaforte.cql :as cql]
             [lcmap.client.status-codes :as status]
             [lcmap.see.job.db :as db]
-            [lcmap.see.job.tracker.base :as base]))
+            [lcmap.see.job.tracker.base :as base])
+  (:refer-clojure :exclude [new]))
 
-;;; Utility functions ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;; Support functions ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(defn get-event-mgr [component]
-  (get-in component [:job :tracker]))
+(defn new
+  ""
+  [cfg db-conn event-thread]
+  (let [backend (:backend cfg)
+        constructor (base/get-constructor-fn (:backend cfg))]
+    (log/debug "Got constructor:" constructor)
+    (constructor cfg db-conn event-thread)))
 
 ;;; Protocols and behaviours ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -38,6 +44,8 @@
   running a job, if the job has already been run."
   (result-exists? [this result-table job-id]
     "")
+  (send-msg [this args]
+    "")
   (init-job-track [this args]
     "")
   (return-existing-result [this args]
@@ -51,11 +59,8 @@
   (done [this args]
     ""))
 
-;; XXX Don't use the protocol functions to get a function and then call it, just call it
-
 (def trackable-default-behaviour
   "Default implementations for ITrackable."
-  ;; XXX maybe in next line use #(-> % ...) instead of (fn ...)?
   {:stop #'base/stop-event-thread
    :get-tracker (fn [this] (base/get-tracker-fn (:name this)))
    :track-job #'base/track-job
@@ -67,9 +72,11 @@
 (def jobable-default-behaviour
   "Default implementations for IJobable."
   {:result-exists? #'base/result-exists?
+   :send-msg #'base/send-msg
    :init-job-track #'base/init-job-track
    :return-existing-result #'base/return-existing-result
-   :run-job #'base/run-job
+   :start-job-run #'base/start-job-run
+   :finish-job-run #'base/finish-job-run
    :save-job-data #'base/save-job-data
    :finish-job-track #'base/finish-job-track
    :done #'base/done})

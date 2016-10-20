@@ -4,7 +4,9 @@
             [clojure.string :as string]
             [mesomatic.types :as types]
             [clojusc.twig :refer [pprint]]
-            [lcmap.see.backend.mesos.models.common.resources :as resources]
+            [lcmap.see.backend.mesos.models.common.offer :as comm-offer]
+            [lcmap.see.backend.mesos.models.common.resources :as comm-resources]
+            [lcmap.see.backend.mesos.models.common.state :as comm-state]
             [lcmap.see.backend.mesos.util :as util]))
 
 (def task-info-map {:name "Example Task %d (Clojure)"
@@ -19,9 +21,9 @@
   (into task-info-map
         {:name (format (:name task-info-map) index)
          :task-id (util/get-uuid)
-         :slave-id (util/get-agent-id offer)  ;; maybe no functrion for this ...
-         :executor (util/get-exec-info state) ;; use new payload ns instead
-         :resources (resources/make offer)}))
+         :slave-id (comm-offer/get-agent-id offer)
+         :executor (comm-state/get-exec-info state)
+         :resources (comm-resources/make offer)}))
 
 (defn make
   ""

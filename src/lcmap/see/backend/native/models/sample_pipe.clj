@@ -6,7 +6,6 @@
             [clojure.string :as string]
             [clj-commons-exec :as exec]
             [lcmap.see.job.tracker :as tracker]
-            [lcmap.see.job.tracker.native]
             [lcmap.see.util :as util]))
 
 (defn exec-pipe-run

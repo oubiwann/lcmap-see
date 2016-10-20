@@ -10,7 +10,7 @@
             [mesomatic.types :as types]
             [lcmap.see.backend.mesos.models.common.framework :as comm-framework]
             [lcmap.see.backend.mesos.models.common.payload :as comm-payload]
-            [lcmap.see.backend.mesos.models.common.resource :as comm-resource]
+            [lcmap.see.backend.mesos.models.common.resources :as comm-resources]
             [lcmap.see.backend.mesos.models.common.state :as comm-state]
             [lcmap.see.backend.mesos.models.sample.executor :as executor]
             [lcmap.see.backend.mesos.models.sample.offers :as offers]
@@ -67,7 +67,7 @@
   (let [master-info (comm-payload/get-master-info payload)
         framework-id (comm-payload/get-framework-id payload)
         exec-info (executor/cmd-info-map
-                    master-info framework-id (util/cwd))]
+                    master-info framework-id)] ; XXX maybe pass tracker impl here?
     (log/info "Registered with framework id:" framework-id)
     (log/trace "Got master info:" (pprint master-info))
     (log/trace "Got state:" (pprint state))
@@ -126,15 +126,14 @@
 
 (defmethod handle-msg :offer-rescinded
   [state payload]
-  (let [framework-id (comm-state/get-framework-id state)
+  (let [framework-id (comm-payload/get-framework-id payload)
         offer-id (comm-payload/get-offer-id payload)]
-    (log/infof "Offer %s rescinded from framework %s."
-               offer-id (comm-payload/get-framework-id payload))
+    (log/infof "Offer %s rescinded from framework %s." offer-id framework-id)
     state))
 
 (defmethod handle-msg :framework-message
   [state payload]
-  (let [framework-id (comm-state/get-framework-id state)
+  (let [framework-id (comm-payload/get-framework-id payload)
         executor-id (comm-payload/get-executor-id payload)
         slave-id (comm-payload/get-slave-id payload)]
     (comm-payload/log-framework-msg framework-id executor-id slave-id payload)
@@ -176,14 +175,14 @@
 
 (defn run
   "This is the function that actually runs the framework."
-  [component]
+  [see-backend tracker-impl model-args]
   (log/info "Running LCMAP SEE sample Mesos framework ...")
-  (let [master (util/get-master component)
-        ch (chan)
+  (log/debug "Got backend:" see-backend)
+  (let [ch (chan)
         sched (async-scheduler/scheduler ch)
         driver (scheduler-driver sched
                                  framework-info-map
-                                 master
+                                 (util/get-master see-backend)
                                  nil
                                  false)]
     (log/debug "Starting sample scheduler ...")
@@ -195,7 +194,10 @@
        :channel ch
        :exec-info nil
        :launched-tasks 0
-       :limits (assoc limits :max-tasks task-count)
-       :cfg component}
+       ;; XXX remove or update limits-processing code
+       :limits (assoc limits :max-tasks 2)
+       :backend see-backend
+       :tracker tracker-impl
+       :model-args model-args}
       ch)
     (scheduler/join! driver)))

@@ -61,6 +61,11 @@
   [payload]
   (get-in payload [:slave-id :value]))
 
+(defn get-agent-id
+  ""
+  [payload]
+  (get-in payload [:agent-id :value]))
+
 (defn get-message
   ""
   [payload]

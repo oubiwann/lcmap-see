@@ -1,4 +1,4 @@
-(ns lcmap.see.job.tracker.native
+(ns lcmap.see.job.tracker.mesos
   ""
   (:require [clojure.tools.logging :as log]
             [co.paralleluniverse.pulsar.core :refer [defsfn]]
@@ -19,17 +19,19 @@
   (log/debugf "Running the job with function %s and args %s ..."
               job-func
               job-args)
-  (let [job-data (job-func job-args)]
-    (log/debugf "Kicked off native job.")
-    (base/send-msg this (into args {:type :job-finish-run
-                                    :result job-data}))))
+  ;; XXX What's the best way to capture the results from a Mesos point of view?
+  ;;     We'll probably need to send the result when the appropriate async
+  ;;     handler fires ... so the handler might need a reference to the protocol
+  ;;     implementation ... in which case *it* can notify the :event-thread
+  ;;     of results available to save ...
+  (apply job-func job-args)
+  (log/debugf "Kicked off Mesos framework."))
 
 (defsfn finish-job-run
   [this {job-id :job-id job-result :result :as args}]
-    (log/debugf "Got result of type %s with value %s" (type job-result) job-result)
-    @(db/update-status (:db-conn this) job-id status/pending-link)
-    (log/debug "Finished job.")
-    (base/send-msg this (into args {:type :job-save-data})))
+  @(db/update-status (:db-conn this) job-id status/pending-link)
+  (log/debug "Finished job with results: " job-result)
+  (base/send-msg this (into args {:type :job-save-data})))
 
 (defsfn dispatch-handler
   [this {type :type :as args}]
@@ -50,12 +52,12 @@
     {:start-job-run #'start-job-run
      :finish-job-run #'finish-job-run}))
 
-(defrecord NativeTracker [name cfg db-conn event-thread])
+(defrecord MesosTracker [name cfg db-conn event-thread])
 
-(extend NativeTracker tracker/ITrackable tracker/trackable-default-behaviour)
-(extend NativeTracker tracker/IJobable jobable-behaviour)
+(extend MesosTracker tracker/ITrackable tracker/trackable-default-behaviour)
+(extend MesosTracker tracker/IJobable jobable-behaviour)
 
 (defn new-tracker
   ""
   [cfg db-conn event-thread]
-  (->NativeTracker :native cfg db-conn event-thread))
+  (->MesosTracker :mesos cfg db-conn event-thread))
