@@ -4,6 +4,7 @@
             [clojure.string :as string]
             [clojure.tools.logging :as log]
             [digest]
+            [lcmap.client.status-codes :as status]
             [leiningen.core.main :as lein]))
 
 (defn finish

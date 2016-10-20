@@ -1,4 +1,4 @@
-(ns lcmap.see.components.db
+:quot(ns lcmap.see.components.db
   "Database LCMAP REST Service system component
 
   For more information, see the module-level code comments in

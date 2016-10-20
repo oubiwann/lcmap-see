@@ -175,16 +175,17 @@
 
 (defn run
   "This is the function that actually runs the framework."
-  [see-backend tracker-impl model-args]
+  [backend-impl tracker-impl sleep-time year]
   (log/info "Running LCMAP SEE sample Mesos framework ...")
-  (log/debug "Got backend:" see-backend)
+  (log/debug "Got backend:" backend-impl)
   (let [ch (chan)
         sched (async-scheduler/scheduler ch)
         driver (scheduler-driver sched
                                  framework-info-map
-                                 (util/get-master see-backend)
+                                 (util/get-master backend-impl)
                                  nil
-                                 false)]
+                                 false)
+        model-args [sleep-time year]]
     (log/debug "Starting sample scheduler ...")
     (scheduler/start! driver)
     (log/debug "Reducing over sample scheduler channel messages ...")
@@ -196,7 +197,7 @@
        :launched-tasks 0
        ;; XXX remove or update limits-processing code
        :limits (assoc limits :max-tasks 2)
-       :backend see-backend
+       :backend backend-impl
        :tracker tracker-impl
        :model-args model-args}
       ch)

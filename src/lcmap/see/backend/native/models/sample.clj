@@ -6,24 +6,33 @@
             [clj-commons-exec :as exec]
             [lcmap.see.job.tracker :as tracker]))
 
-(defn long-running-func [[job-id sleep-time year]]
+(defn long-running-func [job-id [sleep-time year]]
   (log/debugf "\n\nRunning job %s (waiting for %s seconds) ...\n"
               job-id
               sleep-time)
   @(exec/sh ["sleep" (str sleep-time)])
   (:out @(exec/sh ["cal" year])))
 
-(defn run-model [component job-id default-row result-table seconds year]
-  ;; Define some vars for clarity
-  (let [backend (get-in component [:see :backend :name])
-        tracker-impl (get-in component [:see :job :tracker])
-        func #'long-running-func
-        args [job-id seconds year]]
-    (log/trace "Backend: " backend)
-    (log/trace "Passing model args to tracker:" args)
+;; Developer caution! -- It may be tenmpting to this "this could just be
+;; a method of the backend, for the IModelable protocol ..."
+;;
+;; But! Remember: IModelable is not the same as IModel ... backends are
+;; used to *lookup* models (and call them), not *be* models. If you want
+;; to use call the following function as a method, you will need to create
+;; a new IModel protocol and associated implementations *for each model*.
+;; It's probably more efficient just to use a function ...
+
+(defn run-model [backend-impl model-name sleep-time year]
+  (let [cfg (:cfg backend-impl)
+        tracker-impl (tracker/new
+                       model-name
+                       (:cfg backend-impl)
+                       (:db-conn backend-impl)
+                       (:event-thread backend-impl))
+        model-func #'long-running-func
+        model-args [sleep-time year]]
+    (log/trace "Passing model args to tracker:" model-args)
     (tracker/track-job
       tracker-impl
-      job-id
-      default-row
-      result-table
-      [func args])))
+      model-func
+      model-args)))

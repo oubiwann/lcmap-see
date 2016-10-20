@@ -3,6 +3,7 @@
   (:require [clojure.tools.logging :as log]
             [co.paralleluniverse.pulsar.core :refer [defsfn]]
             [co.paralleluniverse.pulsar.actors :as actors]
+            [clojusc.twig :refer [pprint]]
             [lcmap.client.status-codes :as status]
             [lcmap.see.job.db :as db]
             [lcmap.see.job.tracker :as tracker]
@@ -19,8 +20,8 @@
   (log/debugf "Running the job with function %s and args %s ..."
               job-func
               job-args)
-  (let [job-data (job-func job-args)]
-    (log/debugf "Kicked off native job.")
+  (let [job-data (job-func job-id job-args)]
+    (log/debugf "Kicked off native job with job-id:" job-id)
     (base/send-msg this (into args {:type :job-finish-run
                                     :result job-data}))))
 
@@ -33,6 +34,8 @@
 
 (defsfn dispatch-handler
   [this {type :type :as args}]
+  (log/debugf "Dispatching message of type '%s':" type)
+  (log/trace "Message:" (pprint args))
   (case type
     :job-track-init (tracker/init-job-track this args)
     :job-result-exists (tracker/return-existing-result this args)
@@ -57,5 +60,5 @@
 
 (defn new-tracker
   ""
-  [cfg db-conn event-thread]
-  (->NativeTracker :native cfg db-conn event-thread))
+  [name cfg db-conn event-thread]
+  (->NativeTracker name cfg db-conn event-thread))

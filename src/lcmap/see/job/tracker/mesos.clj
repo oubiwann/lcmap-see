@@ -3,6 +3,7 @@
   (:require [clojure.tools.logging :as log]
             [co.paralleluniverse.pulsar.core :refer [defsfn]]
             [co.paralleluniverse.pulsar.actors :as actors]
+            [clojusc.twig :refer [pprint]]
             [lcmap.client.status-codes :as status]
             [lcmap.see.job.db :as db]
             [lcmap.see.job.tracker :as tracker]
@@ -25,16 +26,21 @@
   ;;     implementation ... in which case *it* can notify the :event-thread
   ;;     of results available to save ...
   (apply job-func job-args)
-  (log/debugf "Kicked off Mesos framework."))
+  (log/debugf "Kicked off Mesos framework with job-id:" job-id)
+  ;; XXX send message!
+  )
 
 (defsfn finish-job-run
   [this {job-id :job-id job-result :result :as args}]
+  (log/debugf "Got result of type %s with value %s" (type job-result) job-result)
   @(db/update-status (:db-conn this) job-id status/pending-link)
-  (log/debug "Finished job with results: " job-result)
+  (log/debug "Finished job.")
   (base/send-msg this (into args {:type :job-save-data})))
 
 (defsfn dispatch-handler
   [this {type :type :as args}]
+  (log/debugf "Dispatching message of type '%s':" type)
+  (log/debug "Message:" (pprint args))
   (case type
     :job-track-init (tracker/init-job-track this args)
     :job-result-exists (tracker/return-existing-result this args)
@@ -59,5 +65,5 @@
 
 (defn new-tracker
   ""
-  [cfg db-conn event-thread]
-  (->MesosTracker :mesos cfg db-conn event-thread))
+  [name cfg db-conn event-thread]
+  (->MesosTracker name cfg db-conn event-thread))

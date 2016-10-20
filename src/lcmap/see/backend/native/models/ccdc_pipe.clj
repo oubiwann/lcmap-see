@@ -53,18 +53,19 @@
 (defn run-model
   "This a prototype CCDC model which runs the lcmap command line tool's 'rod' query
   and pipes the results to ccdc as input."
-  [component job-id default-row result-table spectra x-val y-val
+  [backend-impl model-name spectra x-val y-val
    start-time end-time row col in-dir out-dir scene-list verbose]
-  ;; Define some vars for pedagogical clarity
-  (let [backend (get-in component [:see :backend :name])
-        tracker-impl (get-in component [:see :job :tracker])
-        func #'exec-pipe-run
-        args [job-id spectra x-val y-val start-time end-time
+  (let [cfg (:cfg backend-impl)
+        tracker-impl (tracker/new
+                       model-name
+                       (:cfg backend-impl)
+                       (:db-conn backend-impl)
+                       (:event-thread backend-impl))
+        model-func #'exec-pipe-run
+        model-args [job-id spectra x-val y-val start-time end-time
               row col in-dir out-dir scene-list verbose]]
-    (log/debugf "run-model has [func args]: [%s %s]" func args)
+    (log/debugf "run-model has [func args]: [%s %s]" model-func model-args)
     (tracker/track-job
       tracker-impl
-      job-id
-      default-row
-      result-table
-      [func args])))
+      model-func
+      model-args)))
