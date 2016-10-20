@@ -41,18 +41,18 @@ check-no-lint:
 	@lein with-profile +test,-dev test :all
 
 travis-check:
-	./test/travis.sh
+	./test/support/travis.sh
 
 local-travis-check:
-	./test/local-travis/check.sh
-	./test/travis.sh
+	./test/support/local-travis/check.sh
+	./test/support/travis.sh
 
 local-travis-check-no-lint:
-	./test/local-travis/check.sh
-	./test/travis-no-lint.sh
+	./test/support/local-travis/check.sh
+	./test/support/travis-no-lint.sh
 
-local-travis: TEST_DIR = ./test/local-travis
-local-travis: TAG = meson/test
+local-travis: TEST_DIR = ./test/support/local-travis
+local-travis: TAG = lcmapsee/test
 local-travis:
 	cp -r src $(TEST_DIR)/
 	$(TEST_DIR)/setup.sh
