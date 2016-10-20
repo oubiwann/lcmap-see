@@ -39,7 +39,8 @@
 
 (defn new-state
   ""
-  [driver ch backend tracker model-name model-args docker-tag see-job-id]
+  [driver ch backend tracker model-name model-args docker-tag
+   see-job-id see-job-args]
   ;(map->FrameworkState
       {;; Mesos State
        :driver driver
@@ -56,6 +57,7 @@
        :model-args model-args
        :docker-tag docker-tag
        :see-job-id see-job-id
+       :see-job-args see-job-args
        :agent-mount-dir nil}
        ;)
 )
@@ -70,7 +72,7 @@
   the tracker's method `start-run-job`), which is what passes the `job-id`
   argument. The remaining args are what got passed to the tracker by
   `lcmap.see.backend.mesos.models.docker/run-model`."
-  [see-job-id [backend-impl tracker-impl model-name docker-tag]]
+  [see-job-id [backend-impl tracker-impl model-name docker-tag] tracker-args]
   (log/info "Running LCMAP SEE example docker model Mesos framework ...")
   (log/trace "Got backend:" backend-impl)
   (log/trace "Got tracker:" tracker-impl)
@@ -85,7 +87,7 @@
         model-args [docker-tag]
         state (new-state
                 driver ch backend-impl tracker-impl model-name
-                model-args docker-tag see-job-id)
+                model-args docker-tag see-job-id tracker-args)
         handler (partial
                   comm-framework/wrap-handle-msg
                   docker-scheduler/handle-msg)]

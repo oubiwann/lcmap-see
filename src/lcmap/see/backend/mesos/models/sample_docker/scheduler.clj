@@ -18,6 +18,7 @@
             [mesomatic.types :as types]
             [lcmap.see.backend.mesos.models.common.payload :as comm-payload]
             [lcmap.see.backend.mesos.util :as util]
+            [lcmap.see.job.tracker.mesos :as tracker]
             [lcmap.see.util :as see-util]))
 
 ;;; >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
@@ -168,6 +169,11 @@
       :task-finished (let [results (read-results (:agent-mount-dir state))]
                        (log/debug "Task finished.")
                        (log/info "Got results:" results)
+                       (tracker/finish-job-run
+                         (:tracker state)
+                         (assoc (:see-job-args state)
+                                 :type :job-finish-run
+                                 :result results))
                        (scheduler/stop! (:driver state))
                        state)
       :task-failed (do (log/error "Task failed.")
