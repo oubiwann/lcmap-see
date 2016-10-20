@@ -23,33 +23,24 @@
               job-func
               job-args)
   (db/update-status (:db-conn this) job-id status/pending-link)
-  ;; XXX What's the best way to capture the results from a Mesos point of view?
-  ;;     We'll probably need to send the result when the appropriate async
-  ;;     handler fires ... so the handler might need a reference to the protocol
-  ;;     implementation ... in which case *it* can notify the :event-thread
-  ;;     of results available to save ...
-  ;;
-  ;; Maybe send send-msg func and {:type :job-finish-run}? then the backend can
-  ;; call that when it's got a result?
-  ;;
-  ;; Better yet: define a callback partial that only needs to be passed the
-  ;; final results (everything else is ready to go, including the messsage-
-  ;; sending to the event thread).
-  ;;
   ;; The following call to async/thread does not capture the returned async
   ;; channel as a variable because we don't need to track any messages sent
   ;; to that channel (there is no output from calling job-func -- it's all
   ;; async message passing).
-  (async/thread (job-func job-id job-args))
-  (log/debugf "Kicked off Mesos framework with job-id %s ..." job-id)
-  ;; XXX send message!
-  )
+  (async/thread (job-func job-id job-args args))
+  (log/debugf "Kicked off Mesos framework with job-id %s ..." job-id))
 
 (defsfn finish-job-run
+  "This function is called by whatever function (or code) is executed when the
+  Mesos scheduler handles the `:task-finished` Mesos payload. As such, all SEE
+  Mesos frameworks need be written to keep the tracker implementation and the
+  initial args passed to `start-job-run` in the Mesos framework `state` data
+  structure so that the Mesos scheduler may call this function with everything
+  this function needs."
   [this {job-id :job-id job-result :result :as args}]
   (log/debugf "Got result of type %s with value %s" (type job-result) job-result)
   (log/debug "Finished job.")
-  (base/send-msg this (into args {:type :job-save-data})))
+  (base/send-msg this (assoc args :type :job-save-data)))
 
 (defsfn dispatch-handler
   [this {type :type :as args}]
