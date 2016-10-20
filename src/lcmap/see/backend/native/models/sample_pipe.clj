@@ -9,8 +9,10 @@
             [lcmap.see.util :as util]))
 
 (defn exec-pipe-run
-  ""
-  [[job-id line-number unique-count bytes words lines]]
+  "This function is ultimately called by a Job Tracker implementation (usually
+  `start-run-job`), which is what passes the `job-id` argument. The remaining
+  args are what get set in the `run-model` function below."
+  [job-id [backend-impl line-number unique-count bytes words lines]]
   (let [number-flag (util/make-flag "--number" line-number :unary? true)
         count-flag (util/make-flag "--count" unique-count :unary? true)
         bytes-flag (util/make-flag "--bytes" bytes :unary? true)
@@ -41,18 +43,13 @@
   * ``cat /etc/hosts`` (with the optional ``--number`` flag)
   * ``uniq`` (with the optional ``--count`` flag)
   * ``wc`` (with the optional ``--bytes``, ``--words``, or ``--lines`` flags)"
-  [backend-impl model-name line-number unique-count bytes words lines]
-  ;; Define some vars for pedagogical clarity
+  [backend-impl [model-name line-number unique-count bytes words lines]]
   (let [cfg (:cfg backend-impl)
-        tracker-impl (tracker/new
-                       model-name
-                       (:cfg backend-impl)
-                       (:db-conn backend-impl)
-                       (:event-thread backend-impl))
-        model-func #'exec-pipe-run
-        model-args [job-id line-number unique-count bytes words lines]]
-    (log/debugf "run-model has [func args]: [%s %s]" model-func model-args)
+        tracker-impl (tracker/new model-name backend-impl)
+        model-wrapper #'exec-pipe-run
+        model-args [backend-impl line-number unique-count bytes words lines]]
+    (log/debugf "run-model has [func args]: [%s %s]" model-wrapper model-args)
     (tracker/track-job
       tracker-impl
-      model-func
+      model-wrapper
       model-args)))

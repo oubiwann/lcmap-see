@@ -19,7 +19,7 @@ pre-docs:
 	@echo "\nBuilding docs ...\n"
 
 clojure-docs:
-	@lein codox
+	@lein codox +dev
 
 local-docs: pre-docs clojure-docs
 

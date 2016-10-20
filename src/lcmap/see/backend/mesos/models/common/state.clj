@@ -25,3 +25,18 @@
   ""
   [state]
   (get-in state [:limits :max-tasks]))
+
+(defn get-science-model-name
+  ""
+  [state]
+  (:model-name state))
+
+(defn get-science-model-args
+  ""
+  [state]
+  (:model-args state))
+
+(defn get-see-job-id
+  ""
+  [state]
+  (:see-job-id state))

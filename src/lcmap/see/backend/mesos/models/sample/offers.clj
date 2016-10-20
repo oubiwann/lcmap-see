@@ -43,25 +43,26 @@
 (defn loop-offers
   ""
   [state data offers]
-  (loop [status {:remaining-cpus 0
-                 :remaining-mem 0}
-         index 1
-         [offer & remaining-offers] offers
-         tasks [(process-one state data status index offer)]]
-    (let [rsrcs (resources/sum offer)
-          status (update-status status rsrcs)]
-      (if (quit-loop? (:limits state) status remaining-offers)
-        (do
-          (log/debug "Quitting loop ...")
-          tasks)
-        (do
-          (log/debug "Iterating offers ...")
-          (recur
-            status
-            (inc index)
-            remaining-offers
-            (conj tasks
-                  (process-one state data status index offer))))))))
+  (let [status {:remaining-cpus 0
+                :remaining-mem 0}
+        index 1
+        [offer & remaining-offers] offers
+        tasks [(process-one state data status index offer)]]
+    ; (let [rsrcs (resources/sum offer)
+    ;       status (update-status status rsrcs)]
+    ;   (if (quit-loop? (:limits state) status remaining-offers)
+    ;     (do
+    ;       (log/debug "Quitting loop ...")
+    ;       tasks)
+    ;     (do
+    ;       (log/debug "Iterating offers ...")
+    ;       (recur
+    ;         status
+    ;         (inc index)
+    ;         remaining-offers
+    ;         (conj tasks
+    ;               (process-one state data status index offer))))))))
+    tasks))
 
 (defn process-all
   ""

@@ -8,8 +8,19 @@
        (str)
        (assoc {} :value)))
 
+(defn get-host
+  [backend-impl]
+  (get-in backend-impl [:cfg :mesos-host]))
+
 (defn get-master
-  [component]
-  (str (get-in component [:see :mesos-host])
-       ":"
-       (get-in component [:see :mesos-port])))
+  [backend-impl]
+  (format "%s:%s"
+          (get-in backend-impl [:cfg :mesos-host])
+          (get-in backend-impl [:cfg :mesos-port])))
+
+(defn cwd
+  ""
+  []
+  (-> "."
+      (java.io.File.)
+      (.getAbsolutePath)))

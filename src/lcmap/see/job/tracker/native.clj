@@ -20,6 +20,7 @@
   (log/debugf "Running the job with function %s and args %s ..."
               job-func
               job-args)
+  @(db/update-status (:db-conn this) job-id status/pending-link)
   (let [job-data (job-func job-id job-args)]
     (log/debugf "Kicked off native job with job-id:" job-id)
     (base/send-msg this (into args {:type :job-finish-run
@@ -28,7 +29,7 @@
 (defsfn finish-job-run
   [this {job-id :job-id job-result :result :as args}]
     (log/debugf "Got result of type %s with value %s" (type job-result) job-result)
-    @(db/update-status (:db-conn this) job-id status/pending-link)
+    ;; Perform any post-run job clean up that is needed
     (log/debug "Finished job.")
     (base/send-msg this (into args {:type :job-save-data})))
 

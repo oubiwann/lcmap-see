@@ -1,4 +1,5 @@
 (ns lcmap.see.backend.base
+  (:require [clojure.tools.logging :as log])
   (:import [clojure.lang Keyword]))
 
 (def backend-ns "lcmap.see.backend.")
@@ -55,13 +56,31 @@
        (resolve)))
 
 (defn get-model
-  ""
+  "Obtain a function model via the lookup mechanism defined for all backends."
   [this model-name]
   (get-model-fn (:name this) model-name))
 
 (defn run-model
-  ""
+  "This function is called to run a dynamically obtained model.
+
+  It does so by first looking up the model name, using the first element
+  of the `args` vector (which should always be the model name). Once the
+  model (a function) is obtained, it is called by applying all the
+  arguments in the `args` variable IN ADDITION TO prepending the backend
+  implementation into the first position. Some models require data that
+  only the backend has access to, so it is provided to ALL models.
+
+  The model function that is looked up is the one expected to be at the
+  following location:
+
+    `lcmap.see.backend.<impl>.models.<model name>/run-model`
+
+  The function that asks for this dynamically obtained model function is
+  usually a function in `lcmap.rest.api.models.*.`"
   [this args]
   (let [model-name (first args)
         model (get-model this model-name)]
+    (log/trace "Got model name:" model-name)
+    (log/trace "Got original args:" args)
+    (log/trace "Prepending args:" this)
     (apply model (into [this] args))))

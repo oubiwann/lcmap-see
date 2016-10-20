@@ -76,7 +76,7 @@
     (query/limit 1)))
 
 (defn insert-default [conn job-id default-row]
-  (log/debugf "Saving %s to '%s.%s' .." default-row job-keyspace job-table)
+  (log/debugf "Saving %s to '%s.%s' ..." default-row job-keyspace job-table)
   (cql/use-keyspace conn job-keyspace)
   (cql/insert-async
     conn

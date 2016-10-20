@@ -1,7 +1,5 @@
-(ns lcmap.see.backend.mesos.models.sample
-  "This sample runner demonstrates kicking off a job that is executed on
-  Mesos with a synthetic (and variable) delay introduced to show asynchronous
-  results.
+(ns lcmap.see.backend.mesos.models.sample-docker
+  "This sample runner demonstrates kicking off a docker-based job.
 
   Note that the function defined in this namespace conforms to the standard
   defined for SEE model execution; it doesn't implement any spec, standard,
@@ -14,7 +12,7 @@
   of the SEE-Mesos boundary that is 100% Mesos, with no SEE influence
   whatsoever."
   (:require [clojure.tools.logging :as log]
-            [lcmap.see.backend.mesos.models.sample.framework :as framework]
+            [lcmap.see.backend.mesos.models.sample-docker.framework :as framework]
             [lcmap.see.job.tracker :as tracker]
             ;; The following line is CRUCIAL in order to resolve constructors
             [lcmap.see.job.tracker.mesos]))
@@ -28,10 +26,10 @@
 ;; a new IModel protocol and associated implementations *for each model*.
 ;; It's probably more efficient just to use a function ...
 
-(defn run-model [backend-impl model-name seconds year]
+(defn run-model [backend-impl model-name docker-tag]
   (let [tracker-impl (tracker/new model-name backend-impl)
         model-wrapper #'framework/run
-        model-args [backend-impl tracker-impl model-name seconds year]]
+        model-args [backend-impl tracker-impl model-name docker-tag]]
     (log/trace "Passing model args to tracker:" model-args)
     (tracker/track-job
       tracker-impl

@@ -9,7 +9,7 @@
             [lcmap.see.backend.mesos.models.common.state :as comm-state]
             [lcmap.see.backend.mesos.util :as util]))
 
-(def task-info-map {:name "Example Task %d (Clojure)"
+(def task-info-map {:name "Sample Executor Task %d (Clojure)"
                     :count 1
                     :maxcol 1})
 
@@ -21,7 +21,9 @@
   (into task-info-map
         {:name (format (:name task-info-map) index)
          :task-id (util/get-uuid)
-         :slave-id (comm-offer/get-agent-id offer)
+         :slave-id (comm-offer/get-slave-id offer)
+         ;; Future-proofing; in Mesos, eventiually slave-* will go away
+         :agent-id (comm-offer/get-agent-id offer)
          :executor (comm-state/get-exec-info state)
          :resources (comm-resources/make offer)}))
 
@@ -45,11 +47,11 @@
   ""
   [executor-id task-id state reason health]
   {:task-id {:value task-id}
-     :executor-id executor-id
-     :state state
-     :reason reason
-     :source :source-executor
-     :healthy health})
+   :executor-id executor-id
+   :state state
+   :reason reason
+   :source :source-executor
+   :healthy health})
 
 (defn make-status
   ""

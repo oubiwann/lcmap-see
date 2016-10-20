@@ -29,7 +29,11 @@
 (defn get-master-info
   ""
   [payload]
-  (:master-info payload))
+  (log/debug "Getting master info ...")
+  (log/debug "Got payload:" payload)
+  (let [master-info (:master-info payload)]
+    (log/debug "Returning master-info:" master-info)
+    master-info))
 
 (defn get-offer-id
   ""
@@ -65,6 +69,11 @@
   ""
   [payload]
   (get-in payload [:agent-id :value]))
+
+(defn get-task-id
+  ""
+  [payload]
+  (get-in payload [:task :task-id :value]))
 
 (defn get-message
   ""

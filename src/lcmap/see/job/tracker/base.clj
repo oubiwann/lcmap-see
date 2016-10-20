@@ -75,6 +75,7 @@
   (let [db-conn (:db-conn this)
         job-id (gen-hash this model-func model-args)
         default-row (db/make-default-row (:cfg this) job-id (:name this))]
+    (log/debug "Generated model run hash (job-id):" job-id)
     (log/trace "Generated default-row:" (pprint default-row))
     (log/trace "Using event server" (:event-thread this) "with db connection"
                db-conn)

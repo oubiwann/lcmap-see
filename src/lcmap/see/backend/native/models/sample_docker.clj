@@ -3,9 +3,12 @@
             [clj-commons-exec :as exec]
             [lcmap.see.job.tracker :as tracker]))
 
-(defn exec-docker-run [[job-id docker-tag year]]
-  (log/debugf "\n\nRunning job %s (executing docker tag %s) ...\n"
-              job-id
+(defn exec-docker-run
+  "This function is ultimately called by a Job Tracker implementation (usually
+  `start-run-job`), which is what passes the `job-id` argument. The remaining
+  args are what get set in the `run-model` function below."
+  [job-id [model-name docker-tag year]]
+  (log/debugf "\n\nRunning job (executing docker tag %s) ...\n"
               docker-tag)
   (let [cmd ["/usr/bin/sudo" "/usr/bin/docker"
              "run" "-t" docker-tag
@@ -17,18 +20,13 @@
       [:error "unexpected output" result])))
 
 (defn run-model [backend-impl model-name docker-tag year]
-  ;; Define some vars for pedagogical clarity
   (let [cfg (:cfg backend-impl)
-        tracker-impl (tracker/new
-                       model-name
-                       (:cfg backend-impl)
-                       (:db-conn backend-impl)
-                       (:event-thread backend-impl))
-        model-func #'exec-docker-run
-        model-args [job-id docker-tag year]]
+        tracker-impl (tracker/new model-name backend-impl)
+        model-wrapper #'exec-docker-run
+        model-args [docker-tag year]]
     (log/trace "Args:" model-args)
     (tracker/track-job
       tracker-impl
-      model-func
+      model-wrapper
       model-args)))
 
