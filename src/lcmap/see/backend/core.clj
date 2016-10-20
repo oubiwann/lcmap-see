@@ -3,13 +3,32 @@
 
 (def backend-ns "lcmap.see.backend.")
 (def models-infix ".models.")
+(def init-function "new-backend")
 (def run-function "run-model")
+
+(defn get-constructor-ns
+  "This utility function defines the standard namespace for SEE backend
+  constructors. The namespace is assembled from constants and two passed
+  arguments."
+  [^Keyword backend]
+  (str backend-ns (name backend)))
 
 (defn get-model-ns
   "This utility function defines the standard namespace for SEE science models.
   The namespace is assembled from constants and two passed arguments."
   [^Keyword backend ^String model-name]
   (str backend-ns (name backend) models-infix model-name))
+
+(defn get-constructor-fn
+  "This utility function uses the get-constructor-ns function to define
+  the standard for full namespace + function name for SEE constructor
+  functions."
+  [^Keyword backend]
+  (->> init-function
+       (str "/")
+       (str (get-constructor-ns backend))
+       (symbol)
+       (resolve)))
 
 (defn get-model-fn
   "This utility function uses the get-model-ns function to define the standard
