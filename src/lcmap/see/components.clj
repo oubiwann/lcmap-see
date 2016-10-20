@@ -41,7 +41,7 @@
             [lcmap.logger.components.logger :as logger]
             [lcmap.see.components.backend :as backend]
             [lcmap.see.components.db :as db]
-            [lcmap.see.components.eventd :as eventd]
+            [lcmap.see.components.job :as job]
             [lcmap.see.components.system :as system]
             [lcmap.see.config]))
 
@@ -59,17 +59,17 @@
              (db/new-job-client)
              [:cfg
               :logger])
-    :eventd (component/using
-              (eventd/new-event-server)
-              [:cfg
-               :logger])
+    :job (component/using
+           (job/new-job-tracker)
+           [:cfg
+            :logger])
     :sys (component/using
            (system/new-lcmap-see-toplevel)
            [:cfg
             :logger
             :backend
             :jobdb
-            :eventd])))
+            :job])))
 
 (defn stop [system component-key]
   (->> system
