@@ -17,8 +17,8 @@
         event-thread (actors/spawn (actors/gen-event))]
     (log/debugf "Looking up constructor for backend '%s'" backend)
     (log/debug "Got constructor:" constructor)
-    (-> (constructor name (:cfg backend) (:db-conn backend) event-thread)
-        (base/connect-dispatch!))))
+    (base/connect-dispatch!
+      (constructor name (:cfg backend) (:db-conn backend) event-thread))))
 
 ;;; Protocols and behaviours ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 

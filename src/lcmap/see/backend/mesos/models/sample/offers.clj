@@ -67,10 +67,7 @@
 (defn process-all
   ""
   [state data offers]
-  (into [] (loop-offers
-             state
-             data
-             offers)))
+  (vec (loop-offers state data offers)))
 
 (defn get-ids
   ""

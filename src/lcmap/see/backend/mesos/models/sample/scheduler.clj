@@ -82,7 +82,7 @@
                (string/join ", " (map task/get-pb-name tasks)))
     (log/tracef "Got payload for %d task(s): %s"
                 (count tasks)
-                (pprint (into [] (map pprint tasks))))
+                (pprint (vec (map pprint tasks))))
     (log/info "Launching tasks ...")
     (scheduler/accept-offers
       driver
