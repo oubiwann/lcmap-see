@@ -27,11 +27,7 @@ deps-tree:
 loc:
 	@find src -name "*.clj" -exec cat {} \;|wc -l
 
-check:
-	@lein with-profile +testing,-dev test
 
 run:
 	-@lein trampoline run
 
-test-auth-server:
-	@cd test/support/auth-server && lein with-profile +dev run
