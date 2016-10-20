@@ -6,11 +6,10 @@ language: java
 sudo: required
 install:
   - test/support/travis_install.sh
-after_install:
-  - test/support/setup_deps.sh
 before_script:
-  - sudo test/support/install_deps.sh
+  - sudo test/support/install_mesos.sh
   - sudo test/support/start_mesos.sh
+  - test/support/setup_deps.sh
 script:
   - make travis-check
 jdk:

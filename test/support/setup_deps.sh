@@ -9,4 +9,5 @@ cd checkouts && \
 
 mkdir ~/.usgs/
 cp test/support/sample_config.ini ~/.usgs/lcmap.ini
-
+mkdir /home/travis/.usgs
+cp test/support/sample_config.ini /home/travis/.usgs/lcmap.ini
