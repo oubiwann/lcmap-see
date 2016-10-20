@@ -1,6 +1,7 @@
 (ns lcmap.see.backend.mesos.models.common.framework
   "General framework functions for Mesomatic-based models."
   (:require [clojure.tools.logging :as log]
+            [clojusc.twig :refer [pprint]]
             [lcmap.see.util :as util]
             [mesomatic.scheduler :as scheduler]))
 
@@ -18,6 +19,9 @@
     (handler state payload)
     (catch Exception e
       (log/error "Got error:" (.getMessage e))
+      (log/debug "Error details: " e)
+      (log/debugf "Passed args:\nHandler: %s\nState: %s\nPayload: %s"
+                  handler (pprint state) (pprint payload))
       (scheduler/abort! (:driver state))
       (reduced
         (assoc state :error e)))))

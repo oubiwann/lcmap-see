@@ -80,6 +80,7 @@
   [this args]
   (let [model-name (first args)
         model (get-model this model-name)]
+    (log/trace "Got model name:" model-name)
     (log/trace "Got original args:" args)
     (log/trace "Prepending args:" this)
     (apply model (into [this] args))))
