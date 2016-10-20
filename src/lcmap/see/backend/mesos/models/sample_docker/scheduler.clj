@@ -16,10 +16,7 @@
             [mesomatic.async.scheduler :as async-scheduler]
             [mesomatic.scheduler :as scheduler]
             [mesomatic.types :as types]
-            [lcmap.see.backend.mesos.models.common.scheduler :as comm-scheduler]
             [lcmap.see.backend.mesos.models.common.payload :as comm-payload]
-            [lcmap.see.backend.mesos.models.common.resources :as comm-resources]
-            [lcmap.see.backend.mesos.models.common.state :as comm-state]
             [lcmap.see.backend.mesos.util :as util]
             [lcmap.see.util :as see-util]))
 
@@ -123,7 +120,7 @@
         ;agent-id (:agent-id offer-data)
         task-id (util/get-uuid)
         task (task-info task-id slave-id (:docker-tag state))
-        driver (comm-state/get-driver state)]
+        driver (:driver state)]
     (if-not (:offer? state)
       (do
         (log/trace "Got state:" (pprint state))
