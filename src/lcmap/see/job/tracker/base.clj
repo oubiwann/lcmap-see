@@ -8,7 +8,7 @@
             [lcmap.see.job.db :as db])
   (:import [clojure.lang Keyword]))
 
-(declare send-msg gen-hash)
+(declare send-msg)
 
 (def tracker-ns "lcmap.see.job.tracker.")
 (def init-function "new-tracker")
@@ -71,32 +71,14 @@
 
 (defsfn track-job
   [this model-func model-args]
-  (log/debug "Preparing to track job ...")
-  (let [db-conn (:db-conn this)
-        job-id (gen-hash this model-func model-args)
-        default-row (db/make-default-row (:cfg this) job-id (:name this))]
-    (log/debug "Generated model run hash (job-id):" job-id)
-    (log/trace "Generated default-row:" (pprint default-row))
-    (log/trace "Using event server" (:event-thread this) "with db connection"
-               db-conn)
-    (send-msg this {:type :job-track-init
-                    :job-id job-id
-                    :default-row default-row
-                    :result [model-func model-args]})
-    job-id))
+  {:error "You need to override this function."})
 
 ;;; Job behaviour function implementations ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defsfn gen-hash
   ""
   [this func args]
-  (log/tracef "Preparing to hash [func args]: [%s %s]" func args)
-  (-> func
-      (str)
-      (vector)
-      (into args)
-      (str)
-      (digest/md5)))
+  {:error "You need to override this function."})
 
 (defsfn result-exists?
   [this job-id]
