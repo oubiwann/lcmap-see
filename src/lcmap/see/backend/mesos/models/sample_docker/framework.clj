@@ -55,7 +55,8 @@
        :model-name model-name
        :model-args model-args
        :docker-tag docker-tag
-       :see-job-id see-job-id}
+       :see-job-id see-job-id
+       :agent-mount-dir nil}
        ;)
 )
 ;;; >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
@@ -90,7 +91,7 @@
                   docker-scheduler/handle-msg)]
     (log/trace "Got handler:" handler)
     (log/trace "Using initial state:" state)
-    (log/debug "Starting example model scheduler ...")
+    (log/debug "Starting example docker model scheduler ...")
     (scheduler/start! driver)
     (log/debug "Reducing over example model scheduler channel messages ...")
     (async/reduce handler state ch)

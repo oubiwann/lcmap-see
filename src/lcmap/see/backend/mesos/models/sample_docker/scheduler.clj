@@ -9,6 +9,8 @@
   Armstrong's blog post on Red/Green Callbacks:
    * http://joearms.github.io/2013/04/02/Red-and-Green-Callbacks.html"
   (:require [clojure.string :as string]
+            [clojure.data.json :as json]
+            [clojure.java.io :as io]
             [clojure.tools.logging :as log]
             [clojusc.twig :refer [pprint]]
             [mesomatic.async.scheduler :as async-scheduler]
@@ -49,6 +51,35 @@
                {:name "mem"
                 :type :value-scalar
                 :scalar (* 1024 30)}]})
+
+;;; >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+;;; Utility functions
+;;; >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
+(defn get-mount-source
+  "Given the raw 'data' field from a :task-running payload, this function
+  decodes it (converts it to a UTF-8 string) and extracts and returns the Mesos
+  agent mount source directory."
+  [byte-string]
+  (-> byte-string
+      (.toStringUtf8)
+      (json/read-str)
+      (get-in [0 "Mounts" 0 "Source"])))
+
+(defn read-results
+  "Docker results (output in sdtout) is saved to a file by the agent. In
+  particular, it is saved to a place called the agents 'mount source'.
+
+  This simple parsing that this function does just assumes that the output
+  saved to stdout is all on a single line in the second-to-last position in the
+  file (with the last position being the line 'Shutting down'). When used with
+  '(line-seq)', though, the final line is ignored, thus 'last' gets us the
+  second-to-last line, which holds the results."
+  [directory-name]
+  (with-open [reader (io/reader (str directory-name "/stdout"))]
+    (-> reader
+        (line-seq)
+        (last))))
 
 ;;; >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 ;;; Framework callbacks
@@ -125,22 +156,23 @@
                state-name)
     (case state-name
       :task-staging (do (log/info "Task is staging ...")
-                        (log/debug "Raw data:" (:data status))
-                        (log/debug "Data:" (.toStringUtf8 (:data status)))
+                        (log/trace "Raw data:" (:data status))
+                        (log/trace "Data:" (.toStringUtf8 (:data status)))
                         state)
       :task-starting (do (log/info "Task is starting ...")
-                         (log/debug "Raw data:" (:data status))
-                         (log/debug "Data:" (.toStringUtf8 (:data status)))
+                         (log/trace "Raw data:" (:data status))
+                         (log/trace "Data:" (.toStringUtf8 (:data status)))
                          state)
-      :task-running (do (log/info "Task is running ...")
-                        (log/debug "Raw data:" (:data status))
-                        (log/debug "Data:" (.toStringUtf8 (:data status)))
-                        state)
-      :task-finished (do (log/info "Task finished.")
-                         (log/debug "Raw data:" (:data status))
-                         (log/debug "Data:" (.toStringUtf8 (:data status)))
-                         (scheduler/stop! (:driver state))
-                         state)
+      :task-running (let [data (:data status)]
+                      (log/info "Task is running ...")
+                      (log/trace "Raw data:" data)
+                      (log/trace "Data:" (.toStringUtf8 data))
+                      (assoc state :agent-mount-dir (get-mount-source data)))
+      :task-finished (let [results (read-results (:agent-mount-dir state))]
+                       (log/info "Task finished.")
+                       (log/info "Got results:" results)
+                       (scheduler/stop! (:driver state))
+                       state)
       :task-failed (do (log/error "Task failed.")
                        (scheduler/stop! (:driver state))
                        state)

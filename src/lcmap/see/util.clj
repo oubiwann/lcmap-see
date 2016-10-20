@@ -88,3 +88,6 @@
   ""
   [an-ns fn-name]
   (get-meta an-ns [fn-name :doc]))
+
+(def penultimate
+  (comp second reverse))

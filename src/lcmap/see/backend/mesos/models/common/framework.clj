@@ -20,8 +20,8 @@
     (catch Exception e
       (log/error "Got error:" (.getMessage e))
       (log/debug "Error details: " e)
-      (log/debugf "Passed args:\nHandler: %s\nState: %s\nPayload: %s"
-                  handler (pprint state) (pprint payload))
+      (log/debug "nHandler:" handler)
+      (log/tracef "State: %s\nPayload: %s" (pprint state) (pprint payload))
       (scheduler/abort! (:driver state))
       (reduced
         (assoc state :error e)))))
