@@ -113,7 +113,7 @@
 
 (defmethod handle-msg :resource-offers
   [state payload]
-  (log/info "Handling :resource-offers message ...")
+  (log/debug "Handling :resource-offers message ...")
   (let [offer-data (first (comm-payload/get-offers payload))
         offer-id (:id offer-data)
         slave-id (:slave-id offer-data)
@@ -140,7 +140,7 @@
         (scheduler/launch-tasks! driver offer-id [task] {:refuse-seconds 1})
         (assoc state :offer? true :tasks [task]))
       (do
-        (log/info "Already accepted offer and created task; ignoring offer.")
+        (log/debug "Already accepted offer and created task; ignoring offer.")
         state))))
 
 (defmethod handle-msg :status-update
@@ -152,21 +152,21 @@
     (log/infof "Handling :status-update message with state '%s' ..."
                state-name)
     (case state-name
-      :task-staging (do (log/info "Task is staging ...")
+      :task-staging (do (log/debug "Task is staging ...")
                         (log/trace "Raw data:" (:data status))
                         (log/trace "Data:" (.toStringUtf8 (:data status)))
                         state)
-      :task-starting (do (log/info "Task is starting ...")
+      :task-starting (do (log/debug "Task is starting ...")
                          (log/trace "Raw data:" (:data status))
                          (log/trace "Data:" (.toStringUtf8 (:data status)))
                          state)
       :task-running (let [data (:data status)]
-                      (log/info "Task is running ...")
+                      (log/debug "Task is running ...")
                       (log/trace "Raw data:" data)
                       (log/trace "Data:" (.toStringUtf8 data))
                       (assoc state :agent-mount-dir (get-mount-source data)))
       :task-finished (let [results (read-results (:agent-mount-dir state))]
-                       (log/info "Task finished.")
+                       (log/debug "Task finished.")
                        (log/info "Got results:" results)
                        (scheduler/stop! (:driver state))
                        state)
