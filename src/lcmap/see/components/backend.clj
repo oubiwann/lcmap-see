@@ -2,7 +2,7 @@
   "The LCMAP SEE component for selecting execution environment backend."
   (:require [clojure.tools.logging :as log]
             [com.stuartsierra.component :as component]
-            [lcmap.see.backend.core :as backend]
+            [lcmap.see.backend :as backend]
             [lcmap.see.backend.ec2]
             [lcmap.see.backend.mesos]
             [lcmap.see.backend.native]

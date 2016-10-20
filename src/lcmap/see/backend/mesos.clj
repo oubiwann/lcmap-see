@@ -2,7 +2,7 @@
   (:require [clojure.core.async :as async :refer [chan <! go]]
             [clojure.string :as string]
             [clojure.tools.logging :as log]
-            [lcmap.see.backend.core :as see]
+            [lcmap.see.backend :as see]
             [lcmap.see.util :as util]))
 
 ;;; >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>

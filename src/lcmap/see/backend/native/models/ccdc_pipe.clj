@@ -58,13 +58,14 @@
    start-time end-time row col in-dir out-dir scene-list verbose]
   ;; Define some vars for pedagogical clarity
   (let [backend (get-in component [:see :backend :name])
-        track-job (tracker/get-tracker-fn backend)
+        tracker-impl (get-in component [:see :job :tracker])
         func #'exec-pipe-run
         args [job-id spectra x-val y-val start-time end-time
                      row col in-dir out-dir scene-list verbose]]
     (log/debugf "run-model has [func args]: [%s %s]" func args)
-    (track-job component
-               job-id
-               default-row
-               result-table
-               [func args])))
+    (tracker/track-job
+      tracker-impl
+      job-id
+      default-row
+      result-table
+      [func args])))

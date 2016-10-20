@@ -1,5 +1,5 @@
 (ns lcmap.see.backend.native
-  (:require [lcmap.see.backend.core :as see]))
+  (:require [lcmap.see.backend :as see]))
 
 (defrecord NativeBackend [name cfg])
 

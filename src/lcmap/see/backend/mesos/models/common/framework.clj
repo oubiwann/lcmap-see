@@ -4,7 +4,7 @@
             [clojure.string :as string]
             [clojure.tools.logging :as log]
             [clojusc.twig :refer [pprint]]
-            [lcmap.see.backend.core :as see]
+            [lcmap.see.backend :as see]
             [lcmap.see.util :as util]
             [mesomatic.scheduler :as scheduler :refer [scheduler-driver]]))
 

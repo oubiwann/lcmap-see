@@ -6,7 +6,7 @@
             [clojure.string :as string]
             [clj-commons-exec :as exec]
             [lcmap.see.job.tracker :as tracker]
-            [lcmap.see.job.tracker.native]))
+            [lcmap.see.job.tracker.native]
             [lcmap.see.util :as util]))
 
 (defn exec-pipe-run
@@ -46,13 +46,14 @@
    words lines]
   ;; Define some vars for pedagogical clarity
   (let [backend (get-in component [:see :backend :name])
-        track-job (tracker/get-tracker-fn backend)
+        tracker-impl (get-in component [:see :job :tracker])
+        track-job (base/get-tracker-fn backend)
         func #'exec-pipe-run
         args [job-id line-number unique-count bytes words lines]]
     (log/debugf "run-model has [func args]: [%s %s]" func args)
-    (track-job component
-               job-id
-               default-row
-               result-table
-               [func args])))
-
+    (tracker/track-job
+      tracker-impl
+      job-id
+      default-row
+      result-table
+      [func args])))

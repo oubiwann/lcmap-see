@@ -37,7 +37,6 @@
       (types/pb->data)
       :name))
 
-
 ;;; Task Status
 
 (defn make-status-map

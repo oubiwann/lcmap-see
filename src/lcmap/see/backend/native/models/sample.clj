@@ -17,14 +17,14 @@
 (defn run-model [component job-id default-row result-table seconds year]
   ;; Define some vars for pedagogical clarity
   (let [backend (get-in component [:see :backend :name])
-        track-job (tracker/get-tracker-fn backend)
+        tracker-impl (get-in component [:see :job :tracker])
         func #'long-running-func
         args [job-id seconds year]]
     (log/trace "Backend: " backend)
-    (log/trace "Tracker function:" track-job)
     (log/trace "Args:" args)
-    (track-job component
-               job-id
-               default-row
-               result-table
-               [func args])))
+    (tracker/track-job
+      tracker-impl
+      job-id
+      default-row
+      result-table
+      [func args])))
