@@ -3,6 +3,7 @@
   (:require [clojure.tools.logging :as log]
             [co.paralleluniverse.pulsar.core :refer [defsfn]]
             [co.paralleluniverse.pulsar.actors :as actors]
+            [clojure.core.async :as async]
             [clojusc.twig :refer [pprint]]
             [lcmap.client.status-codes :as status]
             [lcmap.see.job.db :as db]
@@ -35,9 +36,11 @@
   ;; final results (everything else is ready to go, including the messsage-
   ;; sending to the event thread).
   ;;
-  ;; XXX the following is currently blocking and needs to be run asynchronously
-  ;; or in a separate thread
-  (job-func job-id job-args)
+  ;; The following call to async/thread does not capture the returned async
+  ;; channel as a variable because we don't need to track any messages sent
+  ;; to that channel (there is no output from calling job-func -- it's all
+  ;; async message passing).
+  (async/thread (job-func job-id job-args))
   (log/debugf "Kicked off Mesos framework with job-id %s ..." job-id)
   ;; XXX send message!
   )
